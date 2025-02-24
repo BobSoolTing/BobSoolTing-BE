@@ -1,0 +1,37 @@
+spring:
+  application:
+      name: bobsoolting
+
+  datasource:
+    url: jdbc:mariadb://${DATABASE_HOST}:${MARIA_DATABASE_PORT}/${MARIA_DATABASE_NAME}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.mariadb.jdbc.Driver
+
+  jpa:
+    show-sql: true
+    database: mysql
+    properties:
+      hibernate:
+        format_sql: true
+    generate-ddl: false
+
+#  data:
+#    redis:
+#      host: ${REDIS_HOST}
+#      port: ${REDIS_PORT}
+#      repositories:
+#        enabled: false
+
+logging:
+  level:
+    bst.bobsoolting: DEBUG
+    org.springframework.security: TRACE
+    org.mybatis: DEBUG
+    java.sql: DEBUG
+
+jwt:
+  secret-key: ${JWT_SECRET_KEY}
+
+mybatis:
+  mapper-locations: classpath:/bst/bobsoolting/mapper/**/*.xml
