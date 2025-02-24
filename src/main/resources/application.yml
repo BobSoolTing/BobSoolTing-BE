@@ -9,12 +9,14 @@ spring:
     driver-class-name: org.mariadb.jdbc.Driver
 
   jpa:
+    open-in-view: false
     show-sql: true
     database: mysql
     properties:
       hibernate:
         format_sql: true
     generate-ddl: false
+
 
 #  data:
 #    redis:
@@ -30,8 +32,8 @@ logging:
     org.mybatis: DEBUG
     java.sql: DEBUG
 
-jwt:
-  secret-key: ${JWT_SECRET_KEY}
+#jwt:
+#  secret-key: ${JWT_SECRET_KEY}
 
 mybatis:
   mapper-locations: classpath:/bst/bobsoolting/mapper/**/*.xml
