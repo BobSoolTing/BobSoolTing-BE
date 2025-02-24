@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="bst.bobsoolting.member.query.repository.MemberMapper">
+    <resultMap id="memberResultMap" type="bst.bobsoolting.member.command.domain.aggregate.entity.Member">
+        <id property="memberId" column="member_id"/>
+        <result property="loginId" column="login_id"/>
+        <result property="password" column="password"/>
+        <result property="nickname" column="nickname"/>
+        <result property="phone" column="phone"/>
+        <result property="gender" column="gender" javaType="bst.bobsoolting.member.command.domain.aggregate.MemberGender"/>
+        <result property="birth" column="birth" jdbcType="DATE"/>
+        <result property="university" column="university"/>
+        <result property="department" column="department"/>
+        <result property="studentNumber" column="student_number" jdbcType="INTEGER"/>
+        <result property="rating" column="rating" jdbcType="FLOAT"/>
+        <result property="createdAt" column="created_at" jdbcType="TIMESTAMP"/>
+        <result property="updatedAt" column="updated_at" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+</mapper>
