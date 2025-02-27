@@ -1,7 +1,14 @@
 package bst.bobsoolting.member.command.application.controller;
 
+import bst.bobsoolting.member.command.application.dto.MemberDTO;
+import bst.bobsoolting.member.command.application.mapper.MemberConverter;
+import bst.bobsoolting.member.command.application.service.MemberCommandService;
+import bst.bobsoolting.member.command.domain.vo.request.RequestAdditionalRegisterVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -10,4 +17,15 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RequiredArgsConstructor
 public class MemberCommandController {
+
+    private final MemberCommandService memberCommandService;
+    private final MemberConverter memberConverter;
+
+    @PostMapping("/complete-registration")
+    public ResponseEntity<?> completeRegistration(@RequestBody RequestAdditionalRegisterVO info) {
+        log.info("추가 회원가입 정보 수신: {}", info);
+        MemberDTO newMember = memberConverter.fromAdditionalVOToEntity(info);
+        memberCommandService.createMember(newMember);
+        return ResponseEntity.ok("회원가입 완료");
+    }
 }
