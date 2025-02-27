@@ -1,6 +1,7 @@
 package bst.bobsoolting.member.command.domain.aggregate.entity;
 
 import bst.bobsoolting.member.command.domain.aggregate.MemberGender;
+import bst.bobsoolting.member.command.domain.aggregate.MemberRole;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,11 +22,8 @@ public class Member {
     @Column(name = "member_id", nullable = false)
     private Long memberId;
 
-    @Column(name = "login_id", nullable = false)
-    private String loginId;
-
-    @Column(name = "password", nullable = false)
-    private String password;
+    @Column(name = "kakao_id", nullable = false)
+    private String kakaoId;
 
     @Column(name = "nickname", nullable = false)
     private String nickname;
@@ -51,6 +49,10 @@ public class Member {
 
     @Column(name = "rating", nullable = false)
     private Float rating;
+
+    @Column(name = "member_role", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private MemberRole memberRole;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
