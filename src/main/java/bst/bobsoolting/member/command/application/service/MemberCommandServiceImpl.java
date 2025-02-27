@@ -23,7 +23,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     private final MemberConverter memberConverter;
 
     @Override
-    public void createMember(MemberDTO newMemberDTO) {
+    public MemberDTO createMember(MemberDTO newMemberDTO) {
         try {
             String memberId = generateMemberId();
             log.info("생성된 memberId: {}", memberId);
@@ -32,6 +32,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
             memberRepository.save(newMember);
             log.info("회원가입 완료: kakaoId={}, memberId={}", newMember.getKakaoId(), newMember.getMemberId());
+            return memberConverter.fromEntityToDTO(newMember);
         } catch (Exception e) {
             log.error("회원가입 실패: {}", e.getMessage(), e);
             throw new CommonException(ErrorCode.INTERNAL_SERVER_ERROR);
