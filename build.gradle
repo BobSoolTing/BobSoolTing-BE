@@ -47,6 +47,9 @@ dependencies {
 
 	// 페이징 처리를 위한 PageHelper 의존성 추가
 	implementation 'com.github.pagehelper:pagehelper-spring-boot-starter:1.4.6'
+
+	// 카카오 로그인 설정을 위해 추가
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 }
 
 tasks.named('test') {

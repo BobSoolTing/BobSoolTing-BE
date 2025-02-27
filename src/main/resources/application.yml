@@ -17,6 +17,27 @@ spring:
         format_sql: true
     generate-ddl: false
 
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            client-id: ${KAKAO_CLIENT_KEY}
+            client-secret: ${KAKAO_CLIENT_SECRET_KEY}
+            client-name: kakao
+            authorization-grant-type: authorization_code
+            redirect-uri: ${KAKAO_BASE_URL}/login/oauth2/code/kakao
+            scope:
+              - profile_nickname
+              - profile_image
+            client-authentication-method: client_secret_post
+
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
 
 #  data:
 #    redis:
@@ -31,9 +52,6 @@ logging:
     org.springframework.security: TRACE
     org.mybatis: DEBUG
     java.sql: DEBUG
-
-#jwt:
-#  secret-key: ${JWT_SECRET_KEY}
 
 mybatis:
   mapper-locations: classpath:/bst/bobsoolting/mapper/**/*.xml
