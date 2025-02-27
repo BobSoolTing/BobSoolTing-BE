@@ -14,7 +14,7 @@ import java.util.Date;
 @ToString
 @Builder
 public class MemberDTO {
-    private Long memberId;
+    private String memberId;
     private String kakaoId;
     private String nickname;
     private String phone;
