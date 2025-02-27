@@ -4,8 +4,7 @@
 <mapper namespace="bst.bobsoolting.member.query.repository.MemberMapper">
     <resultMap id="memberResultMap" type="bst.bobsoolting.member.command.domain.aggregate.entity.Member">
         <id property="memberId" column="member_id"/>
-        <result property="loginId" column="login_id"/>
-        <result property="password" column="password"/>
+        <result property="kakaoId" column="kakao_id"/>
         <result property="nickname" column="nickname"/>
         <result property="phone" column="phone"/>
         <result property="gender" column="gender" javaType="bst.bobsoolting.member.command.domain.aggregate.MemberGender"/>
@@ -14,8 +13,15 @@
         <result property="department" column="department"/>
         <result property="studentNumber" column="student_number" jdbcType="INTEGER"/>
         <result property="rating" column="rating" jdbcType="FLOAT"/>
+        <result property="memberRole" column="member_role" javaType="bst.bobsoolting.member.command.domain.aggregate.MemberRole"/>
         <result property="createdAt" column="created_at" jdbcType="TIMESTAMP"/>
         <result property="updatedAt" column="updated_at" jdbcType="TIMESTAMP"/>
     </resultMap>
+
+    <select id="findByKakaoId" parameterType="String" resultMap="memberResultMap">
+        SELECT member_id, kakao_id, nickname, phone, gender, birth, university, department, student_number, rating,member_role, created_at, updated_at
+          FROM member
+         WHERE kakao_id = #{kakaoId}
+    </select>
 
 </mapper>
