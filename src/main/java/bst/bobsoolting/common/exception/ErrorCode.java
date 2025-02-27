@@ -40,6 +40,7 @@ public enum ErrorCode {
     EMAIL_AUTH_CODE_INVALID(40117, HttpStatus.UNAUTHORIZED, "인증 번호가 올바르지 않습니다. 다시 요청해주세요."),
     LOGIN_HISTORY_FAILURE(40118, HttpStatus.UNAUTHORIZED, "로그인 이력 저장에 실패했습니다."), // 로그인 이력 기록 실패
     LOGGED_OUT(40119, HttpStatus.UNAUTHORIZED, "로그아웃된 토큰입니다."), // 로그아웃된 토큰인 경우
+    NEW_MEMBER_REGISTRATION_REQUIRED(40120, HttpStatus.UNAUTHORIZED, "신규 회원입니다. 추가 정보를 입력해 주세요."),
 
     // 403: 권한 부족 (Forbidden)
     FORBIDDEN_ROLE(40300, HttpStatus.FORBIDDEN, "요청한 리소스에 대한 권한이 없습니다."), // 사용자가 요청한 리소스에 대한 권한이 없는 경우
