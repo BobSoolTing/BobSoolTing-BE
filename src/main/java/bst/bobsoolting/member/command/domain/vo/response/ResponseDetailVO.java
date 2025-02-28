@@ -1,9 +1,11 @@
 package bst.bobsoolting.member.command.domain.vo.response;
 
 import bst.bobsoolting.member.command.domain.aggregate.MemberGender;
-import bst.bobsoolting.member.command.domain.aggregate.MemberRole;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
@@ -11,19 +13,9 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@ToString
-public class ResponseCreateMemberVO {
-    @JsonProperty("member_id")
-    private String memberId;
-
-    @JsonProperty("kakao_id")
-    private String kakaoId;
-
+public class ResponseDetailVO {
     @JsonProperty("nickname")
     private String nickname;
-
-    @JsonProperty("phone")
-    private String phone;
 
     @JsonProperty("profile_image")
     private String profileImage;
@@ -45,7 +37,4 @@ public class ResponseCreateMemberVO {
 
     @JsonProperty("rating")
     private Float rating;
-
-    @JsonProperty("member_role")
-    private MemberRole memberRole;
 }
