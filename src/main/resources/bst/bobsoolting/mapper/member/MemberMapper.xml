@@ -7,6 +7,7 @@
         <result property="kakaoId" column="kakao_id"/>
         <result property="nickname" column="nickname"/>
         <result property="phone" column="phone"/>
+        <result property="profileImage" column="profile_image"/>
         <result property="gender" column="gender" javaType="bst.bobsoolting.member.command.domain.aggregate.MemberGender"/>
         <result property="birth" column="birth" jdbcType="DATE"/>
         <result property="university" column="university"/>
@@ -19,7 +20,7 @@
     </resultMap>
 
     <select id="findByKakaoId" parameterType="String" resultMap="memberResultMap">
-        SELECT member_id, kakao_id, nickname, phone, gender, birth, university, department, student_number, rating,member_role, created_at, updated_at
+        SELECT member_id, kakao_id, nickname, phone, profile_image, gender, birth, university, department, student_number, rating, member_role, created_at, updated_at
           FROM member
          WHERE kakao_id = #{kakaoId}
     </select>

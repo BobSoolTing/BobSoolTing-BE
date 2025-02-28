@@ -11,7 +11,6 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 @Slf4j
-//필기. 해당 패키지에서 에러 발생시 작동하는 Handler
 @RestControllerAdvice(basePackages = "bst.bobsoolting")
 public class GlobalExceptionHandler {
 
@@ -45,7 +44,7 @@ public class GlobalExceptionHandler {
         return ResponseDTO.fail(e);
     }
 
-    //필기. 서버 내부 오류시 작동
+    // 서버 내부 오류시 작동
     @ExceptionHandler(value = {Exception.class})
     public ResponseDTO<?> handleServerException(Exception e) {
         log.info("occurred exception in handleServerError = {}", e.getMessage());

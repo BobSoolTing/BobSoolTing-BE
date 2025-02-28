@@ -2,7 +2,6 @@ package bst.bobsoolting.common.exception;
 
 import lombok.Getter;
 
-// 에러 응답 형식
 @Getter
 public class ExceptionDTO {
     private final Integer code;

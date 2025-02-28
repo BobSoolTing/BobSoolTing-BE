@@ -5,13 +5,21 @@ import bst.bobsoolting.common.exception.ErrorCode;
 import bst.bobsoolting.common.exception.ExceptionDTO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-@Data
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class ResponseDTO<T> {
 
     @JsonIgnore
@@ -25,18 +33,6 @@ public class ResponseDTO<T> {
 
     @Nullable
     private ExceptionDTO error;
-
-    // 기본 생성자
-    public ResponseDTO() {
-    }
-
-    // 모든 필드를 받는 생성자
-    public ResponseDTO(HttpStatus httpStatus, boolean success, @Nullable T data, @Nullable ExceptionDTO error) {
-        this.httpStatus = httpStatus;
-        this.success = success;
-        this.data = data;
-        this.error = error;
-    }
 
     // static 팩토리 메소드
     public static <T> ResponseDTO<T> ok(T data) {

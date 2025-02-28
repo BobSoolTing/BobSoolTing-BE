@@ -18,6 +18,7 @@ public class MemberDTO {
     private String kakaoId;
     private String nickname;
     private String phone;
+    private String profileImage;
     private MemberGender gender;
     private Date birth;
     private String university;
