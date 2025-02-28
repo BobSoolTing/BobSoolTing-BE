@@ -31,6 +31,9 @@ public class Member {
     @Column(name = "phone", nullable = false)
     private String phone;
 
+    @Column(name = "profile_image")
+    private String profileImage;
+
     @Column(name = "gender", nullable = false)
     @Enumerated(EnumType.STRING)
     private MemberGender gender;
@@ -69,5 +72,17 @@ public class Member {
     @PreUpdate
     private void preUpdate() {
         this.updatedAt = LocalDateTime.now();
+    }
+
+    public void setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
     }
 }
