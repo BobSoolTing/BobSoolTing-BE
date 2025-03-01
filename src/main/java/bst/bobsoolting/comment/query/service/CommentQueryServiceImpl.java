@@ -2,6 +2,7 @@ package bst.bobsoolting.comment.query.service;
 
 import bst.bobsoolting.comment.command.application.mapper.CommentConverter;
 import bst.bobsoolting.comment.command.domain.vo.response.ResponseCommentVO;
+import bst.bobsoolting.comment.command.domain.vo.response.ResponseCommentWithRepliesVO;
 import bst.bobsoolting.comment.query.repository.CommentMapper;
 import com.github.pagehelper.PageHelper;
 import lombok.RequiredArgsConstructor;
@@ -20,12 +21,18 @@ public class CommentQueryServiceImpl implements CommentQueryService {
     private final CommentMapper commentMapper;
 
     @Override
-    public List<ResponseCommentVO> getCommentsByPost(Long postId, Long cursor, int size) {
-        log.info("댓글 조회 - postId: {}, cursor: {}, size: {}", postId, cursor, size);
+    public List<ResponseCommentWithRepliesVO> getCommentsByPost(Long postId, Long cursor, int size) {
+        log.info("댓글 + 대댓글 조회 - postId: {}, cursor: {}, size: {}", postId, cursor, size);
 
         try (com.github.pagehelper.Page<?> ignored = PageHelper.startPage(1, size)) {
             return commentMapper.findCommentsByPost(postId, cursor).stream()
-                    .map(commentConverter::fromEntityToResponseVO)
+                    .map(comment -> ResponseCommentWithRepliesVO.builder()
+                            .comment(commentConverter.fromEntityToResponseCommentVO(comment))
+                            .replies(commentMapper.findRepliesByCommentId(comment.getCommentId())
+                                    .stream()
+                                    .map(commentConverter::fromEntityToResponseReplyVO)
+                                    .collect(Collectors.toList()))
+                            .build())
                     .collect(Collectors.toList());
         }
     }
