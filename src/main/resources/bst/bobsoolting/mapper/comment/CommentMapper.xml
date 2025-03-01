@@ -35,10 +35,10 @@
 
     <select id="findRepliesByCommentId" parameterType="Long" resultMap="replyResultMap">
         SELECT reply_id, reply_content, reply_status, created_at, comment_id, member_id
-        FROM reply
-        WHERE comment_id = #{commentId}
-          AND reply_status = true
-        ORDER BY created_at ASC
+          FROM reply
+         WHERE comment_id = #{commentId}
+           AND reply_status = true
+         ORDER BY created_at
     </select>
 
 </mapper>

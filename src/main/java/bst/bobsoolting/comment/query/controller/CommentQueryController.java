@@ -1,6 +1,5 @@
 package bst.bobsoolting.comment.query.controller;
 
-import bst.bobsoolting.comment.command.domain.vo.response.ResponseCommentVO;
 import bst.bobsoolting.comment.command.domain.vo.response.ResponseCommentWithRepliesVO;
 import bst.bobsoolting.comment.query.service.CommentQueryService;
 import bst.bobsoolting.common.exception.CommonException;

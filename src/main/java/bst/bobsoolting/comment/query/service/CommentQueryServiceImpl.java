@@ -1,7 +1,6 @@
 package bst.bobsoolting.comment.query.service;
 
 import bst.bobsoolting.comment.command.application.mapper.CommentConverter;
-import bst.bobsoolting.comment.command.domain.vo.response.ResponseCommentVO;
 import bst.bobsoolting.comment.command.domain.vo.response.ResponseCommentWithRepliesVO;
 import bst.bobsoolting.comment.query.repository.CommentMapper;
 import com.github.pagehelper.PageHelper;
