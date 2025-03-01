@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="bst.bobsoolting.comment.query.repository.CommentMapper">
+
+    <resultMap id="commentResultMap" type="bst.bobsoolting.comment.command.domain.aggregate.entity.Comment">
+        <id property="commentId" column="comment_id"/>
+        <result property="commentContent" column="comment_content"/>
+        <result property="commentStatus" column="comment_status"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="postId" column="post_id"/>
+        <result property="memberId" column="member_id"/>
+    </resultMap>
+
+    <select id="findCommentsByPost" parameterType="map" resultMap="commentResultMap">
+        SELECT comment_id, comment_content, comment_status, created_at, post_id, member_id
+          FROM comment
+         WHERE post_id = #{postId}
+           AND comment_status = TRUE
+        <if test="cursor != null">
+            AND comment_id &lt; #{cursor}
+        </if>
+        ORDER BY created_at DESC
+        LIMIT #{size}
+    </select>
+
+</mapper>
