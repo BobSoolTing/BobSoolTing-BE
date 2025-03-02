@@ -36,6 +36,7 @@ jobs:
           mkdir -p src/main/resources
           cat > src/main/resources/application.yml.template <<EOL
           spring:
+            port: 8080
             application:
               name: bobsoolting
             datasource:
