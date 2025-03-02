@@ -1,9 +1,9 @@
 package bst.bobsoolting.comment.query.service;
 
-import bst.bobsoolting.comment.command.domain.vo.response.ResponseCommentVO;
+import bst.bobsoolting.comment.command.domain.vo.response.ResponseCommentWithRepliesVO;
 
 import java.util.List;
 
 public interface CommentQueryService {
-    List<ResponseCommentVO> getCommentsByPost(Long postId, Long cursor, int size);
+    List<ResponseCommentWithRepliesVO> getCommentsByPost(Long postId, Long cursor, int size);
 }

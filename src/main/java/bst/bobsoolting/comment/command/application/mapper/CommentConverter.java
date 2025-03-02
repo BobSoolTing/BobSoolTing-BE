@@ -2,9 +2,11 @@ package bst.bobsoolting.comment.command.application.mapper;
 
 import bst.bobsoolting.comment.command.application.dto.CommentDTO;
 import bst.bobsoolting.comment.command.domain.aggregate.entity.Comment;
+import bst.bobsoolting.reply.command.domain.aggregate.entity.Reply;
 import bst.bobsoolting.comment.command.domain.vo.request.RequestCreateCommentVO;
 import bst.bobsoolting.comment.command.domain.vo.request.RequestUpdateCommentVO;
 import bst.bobsoolting.comment.command.domain.vo.response.ResponseCommentVO;
+import bst.bobsoolting.reply.command.domain.vo.response.ResponseReplyVO;
 import bst.bobsoolting.comment.command.domain.vo.response.ResponseCreateCommentVO;
 import bst.bobsoolting.comment.command.domain.vo.response.ResponseUpdateCommentVO;
 import org.springframework.stereotype.Component;
@@ -47,23 +49,32 @@ public class CommentConverter {
                 .build();
     }
 
-    public CommentDTO fromEntityToDTO(Comment savedComment) {
+    public CommentDTO fromEntityToDTO(Comment comment) {
         return CommentDTO.builder()
-                .commentId(savedComment.getCommentId())
-                .commentContent(savedComment.getCommentContent())
-                .commentStatus(savedComment.getCommentStatus())
-                .createdAt(savedComment.getCreatedAt())
-                .postId(savedComment.getPostId())
-                .memberId(savedComment.getMemberId())
+                .commentId(comment.getCommentId())
+                .commentContent(comment.getCommentContent())
+                .commentStatus(comment.getCommentStatus())
+                .createdAt(comment.getCreatedAt())
+                .postId(comment.getPostId())
+                .memberId(comment.getMemberId())
                 .build();
     }
 
-    public ResponseCommentVO fromEntityToResponseVO(Comment comment) {
+    public ResponseCommentVO fromEntityToResponseCommentVO(Comment comment) {
         return ResponseCommentVO.builder()
                 .commentId(comment.getCommentId())
                 .commentContent(comment.getCommentContent())
                 .createdAt(comment.getCreatedAt())
                 .memberId(comment.getMemberId())
+                .build();
+    }
+
+    public ResponseReplyVO fromEntityToResponseReplyVO(Reply reply) {
+        return ResponseReplyVO.builder()
+                .replyId(reply.getReplyId())
+                .replyContent(reply.getReplyContent())
+                .createdAt(reply.getCreatedAt())
+                .memberId(reply.getMemberId())
                 .build();
     }
 }

@@ -14,9 +14,9 @@
 
     <select id="findCommentsByPost" parameterType="map" resultMap="commentResultMap">
         SELECT comment_id, comment_content, comment_status, created_at, post_id, member_id
-          FROM comment
-         WHERE post_id = #{postId}
-           AND comment_status = TRUE
+        FROM comment
+        WHERE post_id = #{postId}
+        AND comment_status = TRUE
         <if test="cursor != null">
             AND comment_id &lt; #{cursor}
         </if>
@@ -24,4 +24,22 @@
         LIMIT #{size}
     </select>
 
+    <resultMap id="replyResultMap" type="bst.bobsoolting.reply.command.domain.aggregate.entity.Reply">
+        <id property="replyId" column="reply_id"/>
+        <result property="replyContent" column="reply_content"/>
+        <result property="replyStatus" column="reply_status"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="commentId" column="comment_id"/>
+        <result property="memberId" column="member_id"/>
+    </resultMap>
+
+    <select id="findRepliesByCommentId" parameterType="Long" resultMap="replyResultMap">
+        SELECT reply_id, reply_content, reply_status, created_at, comment_id, member_id
+          FROM reply
+         WHERE comment_id = #{commentId}
+           AND reply_status = true
+         ORDER BY created_at
+    </select>
+
 </mapper>
+
