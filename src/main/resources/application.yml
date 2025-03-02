@@ -55,3 +55,6 @@ logging:
 
 mybatis:
   mapper-locations: classpath:/bst/bobsoolting/mapper/**/*.xml
+
+cors:
+  allowedOrigins: ${CORS_ALLOWED_ORIGINS}
