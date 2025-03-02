@@ -34,8 +34,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authz -> authz
 //                        .requestMatchers("/api/**/admin/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/api/member/**").authenticated()
+                        .requestMatchers("/api/comment/**").authenticated()
+                        .requestMatchers("/api/post/**").authenticated()
+                        .requestMatchers("/api/reply/**").authenticated()
+                        .requestMatchers("/api/like/**").authenticated()
                         .requestMatchers("/", "/health").permitAll()
-                        .anyRequest().permitAll()
+                        .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2
                         .defaultSuccessUrl("/api/member/loginSuccess", true)
