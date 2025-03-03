@@ -40,7 +40,7 @@ jobs:
             application:
               name: bobsoolting
             datasource:
-              url: jdbc:mariadb://\${DATABASE_HOST}:\${MARIA_DATABASE_PORT}/\${MARIA_DATABASE_NAME}
+              url: jdbc:mariadb://\${DATABASE_HOST}:\${MARIA_DATABASE_PORT}/\${DB_NAME}
               username: \${DB_USERNAME}
               password: \${DB_PASSWORD}
               driver-class-name: org.mariadb.jdbc.Driver
@@ -99,7 +99,7 @@ jobs:
         env:
           DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
           MARIA_DATABASE_PORT: ${{ secrets.MARIA_DATABASE_PORT }}
-          MARIA_DATABASE_NAME: ${{ secrets.MARIA_DATABASE_NAME }}
+          DB_NAME: ${{ secrets.DB_NAME }}
           DB_USERNAME: ${{ secrets.DB_USERNAME }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           KAKAO_CLIENT_KEY: ${{ secrets.KAKAO_CLIENT_KEY }}
