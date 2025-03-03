@@ -1,8 +1,19 @@
-spring:
+server:
   port: 8080
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
+
+spring:
   application:
       name: bobsoolting
+
 
   datasource:
     url: jdbc:mariadb://${DATABASE_HOST}:${MARIA_DATABASE_PORT}/${DB_NAME}

@@ -35,8 +35,19 @@ jobs:
         run: |
           mkdir -p src/main/resources
           cat > src/main/resources/application.yml.template <<EOL
+          server:
+            port: 5000
+          
+          management:
+            endpoints:
+              web:
+                exposure:
+                  include: health
+            endpoint:
+              health:
+                show-details: always
+          
           spring:
-            port: 8080
             application:
               name: bobsoolting
             datasource:
