@@ -33,8 +33,7 @@ public class SecurityConfig {
                 .httpBasic(httpBasic -> httpBasic.disable())
                 .authorizeHttpRequests(authz -> authz
 //                        .requestMatchers("/api/**/admin/**").hasAuthority("ROLE_ADMIN")
-                                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()
-
+                                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**", "/v3/api-docs/swagger-config").permitAll()
 
                                 .requestMatchers("/api/member/complete-registration").permitAll()
                                 .requestMatchers("/api/member/**").authenticated()
