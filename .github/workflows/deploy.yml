@@ -98,8 +98,17 @@ jobs:
               java.sql: DEBUG
           mybatis:
             mapper-locations: classpath:/bst/bobsoolting/mapper/**/*.xml
-          cors:
+                    cors:
             allowedOrigins: \${CORS_ALLOWED_ORIGINS}
+            allowedHeaders: "*"
+            allowedMethods: "*"
+          springdoc:
+            swagger-ui:
+              oauth:
+                client-id: \${KAKAO_CLIENT_KEY}
+                client-secret: \${KAKAO_CLIENT_SECRET_KEY}
+                use-basic-authentication-with-access-code-grant: true
+              oauth2RedirectUrl: \${CORS_ALLOWED_ORIGINS}/swagger-ui/oauth2-redirect.html
           EOL
 
       - name: Set application.yml with Secrets
