@@ -20,7 +20,7 @@ public class CommentQueryController {
 
     private final CommentQueryService commentQueryService;
 
-    @Operation(description = "특정 게시글의 댓글 및 대댓글 목록 조회")
+    @Operation(summary = "특정 게시글의 댓글 및 대댓글 목록 조회", description = "특정 게시글의 댓글 및 대댓글 목록 조회 기능입니다.")
     @GetMapping("/post/{postId}")
     public ResponseEntity<?> getCommentsByPost(@PathVariable Long postId, @RequestParam(required = false) Long cursor, @RequestParam(defaultValue = "10") int size) {
         log.info("댓글 및 대댓글 조회 요청 - postId: {}, cursor: {}, size: {}", postId, cursor, size);

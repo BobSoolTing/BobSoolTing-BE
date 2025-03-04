@@ -26,7 +26,7 @@ public class CommentCommandController {
     private final CommentCommandService commentService;
     private final CommentConverter commentConverter;
 
-    @Operation(description = "댓글 등록")
+    @Operation(summary = "댓글 등록", description = "댓글 등록 기능입니다.")
     @PostMapping
     public ResponseEntity<?> createComment(@RequestBody RequestCreateCommentVO request, @AuthenticationPrincipal OAuth2User user) {
         log.info("등록 요청된 댓글 데이터 : {}", request);
@@ -45,7 +45,7 @@ public class CommentCommandController {
         }
     }
 
-    @Operation(description = "댓글 수정")
+    @Operation(summary = "댓글 수정", description = "댓글 수정 기능입니다.")
     @PatchMapping("/{commentId}")
     public ResponseEntity<?> updateComment(@PathVariable Long commentId, @RequestBody RequestUpdateCommentVO request, @AuthenticationPrincipal OAuth2User user) {
         log.info("수정 요청된 commentId: {}, 데이터: {}", commentId, request);
@@ -66,7 +66,7 @@ public class CommentCommandController {
         }
     }
 
-    @Operation(description = "댓글 삭제 (soft delete)")
+    @Operation(summary = "댓글 삭제 (soft delete)", description = "댓글 삭제 기능입니다.")
     @PatchMapping("/deactivate/{commentId}")
     public ResponseEntity<?> deleteComment(@PathVariable Long commentId, @AuthenticationPrincipal OAuth2User user) {
         log.info("삭제 요청된 댓글 ID : {}", commentId);

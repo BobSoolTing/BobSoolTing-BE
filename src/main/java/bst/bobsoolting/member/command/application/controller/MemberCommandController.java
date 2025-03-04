@@ -25,7 +25,7 @@ public class MemberCommandController {
     private final MemberCommandService memberCommandService;
     private final MemberConverter memberConverter;
 
-    @Operation(description = "추가 회원가입 정보 등록")
+    @Operation(summary = "추가 회원가입 정보 등록", description = "추가 회원가입 정보 등록 기능입니다.")
     @PostMapping("/complete-registration")
     public ResponseEntity<?> completeRegistration(@RequestBody RequestAdditionalRegisterVO info) {
         log.info("추가 회원가입 정보 수신: {}", info);
@@ -35,7 +35,7 @@ public class MemberCommandController {
         return ResponseEntity.status(HttpStatus.OK).body(memberVO);
     }
 
-    @Operation(description = "회원 정보 수정")
+    @Operation(summary = "회원 정보 수정", description = "회원 정보 수정 기능입니다.")
     @PatchMapping("/update-profile")
     public ResponseEntity<?> updateProfile(@AuthenticationPrincipal OAuth2User user, @RequestBody RequestUpdateProfileVO updateInfo) {
         log.info("프로필 수정 요청: {} -> {}", user.getAttribute("id"), updateInfo);

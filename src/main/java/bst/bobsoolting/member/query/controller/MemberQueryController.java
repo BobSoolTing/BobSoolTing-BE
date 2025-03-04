@@ -28,7 +28,7 @@ public class MemberQueryController {
     private final MemberQueryService memberQueryService;
     private final MemberConverter memberConverter;
 
-    @Operation(description = "카카오 OAuth2 로그인 성공 후 처리")
+    @Operation(summary = "카카오 OAuth2 로그인 성공 후 처리")
     @GetMapping("/loginSuccess")
     public ResponseEntity<?> loginSuccess(@AuthenticationPrincipal OAuth2User user) {
         log.info("카카오 로그인 성공: {}", user);
@@ -44,7 +44,7 @@ public class MemberQueryController {
         }
     }
 
-    @Operation(description = "카카오 OAuth2 로그인 실패 처리")
+    @Operation(summary = "카카오 OAuth2 로그인 실패 처리")
     @GetMapping("/loginFailure")
     public ResponseEntity<?> loginFailure() {
         log.info("카카오 로그인 실패");

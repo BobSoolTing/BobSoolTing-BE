@@ -19,7 +19,7 @@ public class PostLikeCommandController {
 
     private final PostLikeCommandService postLikeCommandService;
 
-    @Operation(description = "게시글 좋아요")
+    @Operation(summary = "게시글 좋아요", description = "게시글 좋아요 기능입니다.")
     @PostMapping("/{postId}")
     public ResponseEntity<?> likePost(@PathVariable Long postId, @AuthenticationPrincipal OAuth2User user) {
         log.info("좋아요 요청 - postId: {}, userId: {}", postId, user.getAttribute("id"));
