@@ -33,13 +33,17 @@ public class SecurityConfig {
                 .httpBasic(httpBasic -> httpBasic.disable())
                 .authorizeHttpRequests(authz -> authz
 //                        .requestMatchers("/api/**/admin/**").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers("/api/member/**").authenticated()
-                        .requestMatchers("/api/comment/**").authenticated()
-                        .requestMatchers("/api/post/**").authenticated()
-                        .requestMatchers("/api/reply/**").authenticated()
-                        .requestMatchers("/api/like/**").authenticated()
-                        .requestMatchers("/", "/health").permitAll()
-                        .anyRequest().authenticated()
+                                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()
+
+                                .requestMatchers("/api/member/**").authenticated()
+                                .requestMatchers("/api/comment/**").authenticated()
+                                .requestMatchers("/api/post/**").authenticated()
+                                .requestMatchers("/api/reply/**").authenticated()
+                                .requestMatchers("/api/like/**").authenticated()
+
+                                .requestMatchers("/", "/health").permitAll()
+
+                                .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2
                         .defaultSuccessUrl("/api/member/loginSuccess", true)
@@ -53,7 +57,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList(allowedOrigins, "http://localhost:3000"));
+        configuration.setAllowedOrigins(Arrays.asList(allowedOrigins, "http://localhost:3000", "http://localhost:8080"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowCredentials(true);
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-XSRF-TOKEN"));
