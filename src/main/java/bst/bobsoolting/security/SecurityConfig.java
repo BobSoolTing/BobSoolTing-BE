@@ -37,6 +37,8 @@ public class SecurityConfig {
 
                                 .requestMatchers("/api/member/basic-info").permitAll()
                                 .requestMatchers("/api/member/complete").permitAll()
+                                .requestMatchers("/api/member/loginSuccess").permitAll()
+                                .requestMatchers("/api/member/loginFailure").permitAll()
                                 .requestMatchers("/api/member/**").authenticated()
                                 .requestMatchers("/api/comment/**").authenticated()
                                 .requestMatchers("/api/post/**").authenticated()
