@@ -30,10 +30,18 @@ public class MemberQueryController implements MemberQueryControllerDocs {
 
     @GetMapping("/loginSuccess")
     public ResponseEntity<String> loginSuccess(@AuthenticationPrincipal OAuth2User user) {
-        Long kakaoIdLong = user.getAttribute("id");
-        String kakaoId = String.valueOf(kakaoIdLong);
-        log.info("카카오 로그인 성공: {}", kakaoId);
+        if (user == null) {
+            log.error("❌ OAuth2User 정보가 없습니다. 인증 실패 가능성 있음.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("OAuth2 인증 정보가 없습니다.");
+        }
+
+        log.info("✅ OAuth2User 정보: {}", user.getAttributes());
+
         try {
+            Long kakaoIdLong = user.getAttribute("id");
+            String kakaoId = String.valueOf(kakaoIdLong);
+            log.info("카카오 로그인 성공: {}", kakaoId);
+
             Member existingMember = memberMapper.findByKakaoId(kakaoId);
             boolean isNewMember = (existingMember == null);
 
