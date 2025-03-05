@@ -11,7 +11,6 @@ import bst.bobsoolting.reply.command.domain.repository.ReplyRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -25,48 +24,69 @@ public class ReplyCommandServiceImpl implements ReplyCommandService {
 
     @Transactional
     @Override
-    public ReplyDTO createReply(ReplyDTO replyDTO, OAuth2User user) {
-        Long kakaoIdLong = user.getAttribute("id");
-        String kakaoId = String.valueOf(kakaoIdLong);
+    public ReplyDTO createReply(ReplyDTO replyDTO, String kakaoId) {
+        log.info("대댓글 등록 - kakaoId: {}, 데이터: {}", kakaoId, replyDTO);
 
         Member member = memberMapper.findByKakaoId(kakaoId);
-        if (member == null) throw new CommonException(ErrorCode.NOT_FOUND_MEMBER);
-        String memberId = member.getMemberId();
-        replyDTO.setMemberId(memberId);
+        if (member == null) {
+            log.error("대댓글 등록 실패 - 해당 kakaoId의 회원이 없음: {}", kakaoId);
+            throw new CommonException(ErrorCode.NOT_FOUND_MEMBER);
+        }
+        replyDTO.setMemberId(member.getMemberId());
 
         Reply reply = replyConverter.fromDTOToEntity(replyDTO);
-        log.info("저장할 대댓글 데이터: {}", reply);
-
         reply.create(reply);
+
         Reply savedReply = replyRepository.save(reply);
+        log.info("대댓글 등록 성공 - replyId: {}", savedReply.getReplyId());
 
         return replyConverter.fromEntityToDTO(savedReply);
     }
 
     @Transactional
     @Override
-    public ReplyDTO updateReply(ReplyDTO replyDTO, OAuth2User user) {
-        Reply existingReply = replyRepository.findById(replyDTO.getReplyId())
-                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_REPLY));
+    public ReplyDTO updateReply(ReplyDTO replyDTO, String kakaoId) {
+        log.info("대댓글 수정 - replyId: {}, kakaoId: {}", replyDTO.getReplyId(), kakaoId);
 
-        if (!existingReply.getMemberId().equals(replyDTO.getMemberId())) {
+        Reply existingReply = replyRepository.findById(replyDTO.getReplyId())
+                .orElseThrow(() -> {
+                    log.error("대댓글 수정 실패 - 해당 replyId 없음: {}", replyDTO.getReplyId());
+                    return new CommonException(ErrorCode.NOT_FOUND_REPLY);
+                });
+
+        Member member = memberMapper.findByKakaoId(kakaoId);
+        if (member == null || !existingReply.getMemberId().equals(member.getMemberId())) {
+            log.error("대댓글 수정 실패 - 접근 권한 없음: kakaoId={}, replyId={}", kakaoId, replyDTO.getReplyId());
             throw new CommonException(ErrorCode.ACCESS_DENIED);
         }
 
         existingReply.updateContent(replyDTO.getReplyContent());
         replyRepository.save(existingReply);
+        log.info("대댓글 수정 완료 - replyId: {}", existingReply.getReplyId());
 
         return replyConverter.fromEntityToDTO(existingReply);
     }
 
     @Transactional
     @Override
-    public ReplyDTO deleteReply(Long replyId, OAuth2User user) {
+    public ReplyDTO deleteReply(Long replyId, String kakaoId) {
+        log.info("대댓글 삭제 - replyId: {}, kakaoId: {}", replyId, kakaoId);
+
         Reply existingReply = replyRepository.findById(replyId)
-                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_REPLY));
+                .orElseThrow(() -> {
+                    log.error("대댓글 삭제 실패 - 해당 replyId 없음: {}", replyId);
+                    return new CommonException(ErrorCode.NOT_FOUND_REPLY);
+                });
+
+        Member member = memberMapper.findByKakaoId(kakaoId);
+        if (member == null || !existingReply.getMemberId().equals(member.getMemberId())) {
+            log.error("대댓글 삭제 실패 - 접근 권한 없음: kakaoId={}, replyId={}", kakaoId, replyId);
+            throw new CommonException(ErrorCode.ACCESS_DENIED);
+        }
 
         existingReply.updateStatus(false);
         replyRepository.save(existingReply);
+        log.info("대댓글 삭제 완료 - replyId: {}", replyId);
 
         return replyConverter.fromEntityToDTO(existingReply);
     }

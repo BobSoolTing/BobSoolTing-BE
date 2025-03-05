@@ -10,7 +10,6 @@ import bst.bobsoolting.member.command.domain.vo.request.RequestUpdateProfileVO;
 import bst.bobsoolting.member.query.repository.MemberMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +27,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     private final MemberConverter memberConverter;
 
     @Override
+    @Transactional
     public MemberDTO createMember(MemberDTO newMemberDTO) {
         try {
             String memberId = generateMemberId();
@@ -46,9 +46,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
     @Override
     @Transactional
-    public MemberDTO updateMemberProfile(OAuth2User user, RequestUpdateProfileVO updateInfo) {
-        Long kakaoIdLong = user.getAttribute("id");
-        String kakaoId = String.valueOf(kakaoIdLong);
+    public MemberDTO updateMemberProfile(String kakaoId, RequestUpdateProfileVO updateInfo) {
         log.info("프로필 수정 진행. kakaoId={}, 변경 정보={}", kakaoId, updateInfo);
 
         Member member = memberMapper.findByKakaoId(kakaoId);
@@ -68,10 +66,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
             isUpdated = true;
         }
 
-        if (!isUpdated) {
-            log.info("변경할 항목이 없음. kakaoId={}", kakaoId);
-            return memberConverter.fromEntityToDTO(member);
-        }
+        if (!isUpdated) return memberConverter.fromEntityToDTO(member);
 
         memberRepository.save(member);
         log.info("프로필 수정 완료. kakaoId={}, 수정된 정보={}", kakaoId, updateInfo);
@@ -80,8 +75,6 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     }
 
     private String generateMemberId() {
-        String datePart = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        String uuidPart = UUID.randomUUID().toString().replace("-", "").substring(20);
-        return datePart + uuidPart;
+        return LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")) + UUID.randomUUID().toString().replace("-", "").substring(20);
     }
 }

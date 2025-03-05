@@ -1,5 +1,6 @@
 package bst.bobsoolting.reply.command.application.controller;
 
+import bst.bobsoolting.reply.command.application.controller.docs.ReplyCommandControllerDocs;
 import bst.bobsoolting.reply.command.application.dto.ReplyDTO;
 import bst.bobsoolting.reply.command.application.mapper.ReplyConverter;
 import bst.bobsoolting.reply.command.application.service.ReplyCommandService;
@@ -8,7 +9,6 @@ import bst.bobsoolting.reply.command.domain.vo.request.RequestUpdateReplyVO;
 import bst.bobsoolting.reply.command.domain.vo.response.ResponseCreateReplyVO;
 import bst.bobsoolting.reply.command.domain.vo.response.ResponseUpdateReplyVO;
 import bst.bobsoolting.common.exception.CommonException;
-import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -18,21 +18,20 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("api/reply")
 @Slf4j
 @RequiredArgsConstructor
-public class ReplyCommandController {
+public class ReplyCommandController implements ReplyCommandControllerDocs {
 
     private final ReplyCommandService replyService;
     private final ReplyConverter replyConverter;
 
-    @Operation(summary = "대댓글 등록", description = "대댓글 등록 기능입니다.")
     @PostMapping
     public ResponseEntity<?> createReply(@RequestBody RequestCreateReplyVO request, @AuthenticationPrincipal OAuth2User user) {
         log.info("대댓글 등록 요청: {}", request);
+        String kakaoId = String.valueOf(user.getAttribute("id"));
         try {
             ReplyDTO replyDTO = replyConverter.fromCreateVOToDTO(request);
-            ReplyDTO savedReplyDTO = replyService.createReply(replyDTO, user);
+            ReplyDTO savedReplyDTO = replyService.createReply(replyDTO, kakaoId);
             ResponseCreateReplyVO response = replyConverter.fromDTOToCreateVO(savedReplyDTO);
 
             return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -45,15 +44,15 @@ public class ReplyCommandController {
         }
     }
 
-    @Operation(summary = "대댓글 수정", description = "대댓글 수정 기능입니다.")
     @PatchMapping("/{replyId}")
     public ResponseEntity<?> updateReply(@PathVariable Long replyId, @RequestBody RequestUpdateReplyVO request, @AuthenticationPrincipal OAuth2User user) {
         log.info("대댓글 수정 요청 - replyId: {}, 데이터: {}", replyId, request);
+        String kakaoId = String.valueOf(user.getAttribute("id"));
         try {
             ReplyDTO replyDTO = replyConverter.fromUpdateVOToDTO(request);
             replyDTO.setReplyId(replyId);
 
-            ReplyDTO updatedReply = replyService.updateReply(replyDTO, user);
+            ReplyDTO updatedReply = replyService.updateReply(replyDTO, kakaoId);
             ResponseUpdateReplyVO response = replyConverter.fromDTOToUpdateVO(updatedReply);
 
             return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -66,12 +65,12 @@ public class ReplyCommandController {
         }
     }
 
-    @Operation(summary = "대댓글 삭제 (soft delete)", description = "대댓글 삭제 기능입니다.")
     @PatchMapping("/deactivate/{replyId}")
     public ResponseEntity<?> deleteReply(@PathVariable Long replyId, @AuthenticationPrincipal OAuth2User user) {
         log.info("대댓글 삭제 요청 - replyId: {}", replyId);
+        String kakaoId = String.valueOf(user.getAttribute("id"));
         try {
-            ReplyDTO deletedReply = replyService.deleteReply(replyId, user);
+            ReplyDTO deletedReply = replyService.deleteReply(replyId, kakaoId);
             log.info("삭제된 replyId: {}, 대댓글 상태: {}", deletedReply.getReplyId(), deletedReply.getReplyStatus());
             return ResponseEntity.status(HttpStatus.OK).body("대댓글이 성공적으로 삭제되었습니다.");
         } catch (CommonException e) {
