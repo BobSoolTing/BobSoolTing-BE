@@ -94,6 +94,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
     private Member createMember(String kakaoId) {
         Member newMember = Member.builder()
+                .memberId(generateMemberId())
                 .kakaoId(kakaoId)
                 .nickname("신규 유저")
                 .phone("")
@@ -110,7 +111,6 @@ public class MemberCommandServiceImpl implements MemberCommandService {
                 .build();
         return newMember;
     }
-
 
     private String generateMemberId() {
         return LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")) + UUID.randomUUID().toString().replace("-", "").substring(20);

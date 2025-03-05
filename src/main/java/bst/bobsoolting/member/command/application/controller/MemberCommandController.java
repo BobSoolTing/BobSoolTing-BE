@@ -25,7 +25,7 @@ public class MemberCommandController implements MemberCommandControllerDocs {
     private final MemberCommandService memberCommandService;
     private final MemberConverter memberConverter;
 
-    @PostMapping("/register-basic-info")
+    @PostMapping("/basic-info")
     public ResponseEntity<String> registerBasicInfo(@AuthenticationPrincipal OAuth2User user) {
         Long kakaoIdLong = user.getAttribute("id");
         String kakaoId = String.valueOf(kakaoIdLong);
@@ -43,7 +43,7 @@ public class MemberCommandController implements MemberCommandControllerDocs {
         }
     }
 
-    @PatchMapping("/complete-registration")
+    @PatchMapping("/complete")
     public ResponseEntity<ResponseCreateMemberVO> completeRegistration(@AuthenticationPrincipal OAuth2User user, @RequestBody RequestAdditionalRegisterVO info) {
         Long kakaoIdLong = user.getAttribute("id");
         String kakaoId = String.valueOf(kakaoIdLong);
