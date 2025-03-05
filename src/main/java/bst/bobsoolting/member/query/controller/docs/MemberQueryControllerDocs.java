@@ -16,10 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("api/member")
 public interface MemberQueryControllerDocs {
 
-    @Operation(summary = "카카오 OAuth2 로그인 성공 후 처리", description = "카카오 로그인 성공 후 사용자 정보를 확인")
+    @Operation(summary = "카카오 OAuth2 로그인 성공 후 처리", description = "카카오 로그인 성공 후 사용자 정보를 확인하고 신규 회원 여부를 반환하는 API")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "로그인 성공"),
-            @ApiResponse(responseCode = "400", description = "잘못된 요청"),
+            @ApiResponse(responseCode = "200", description = "로그인 성공 (기존 회원) 또는 추가 정보 입력 필요 (신규 회원)"),
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("/loginSuccess")

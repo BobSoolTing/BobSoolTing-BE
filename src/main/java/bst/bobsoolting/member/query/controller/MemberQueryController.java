@@ -2,9 +2,11 @@ package bst.bobsoolting.member.query.controller;
 
 import bst.bobsoolting.member.command.application.dto.MemberDTO;
 import bst.bobsoolting.member.command.application.mapper.MemberConverter;
+import bst.bobsoolting.member.command.domain.aggregate.entity.Member;
 import bst.bobsoolting.member.command.domain.vo.response.ResponseDetailVO;
 import bst.bobsoolting.member.command.domain.vo.response.ResponseProfileVO;
 import bst.bobsoolting.member.query.controller.docs.MemberQueryControllerDocs;
+import bst.bobsoolting.member.query.repository.MemberMapper;
 import bst.bobsoolting.member.query.service.MemberQueryService;
 import bst.bobsoolting.common.exception.CommonException;
 import lombok.RequiredArgsConstructor;
@@ -24,22 +26,22 @@ public class MemberQueryController implements MemberQueryControllerDocs {
 
     private final MemberQueryService memberQueryService;
     private final MemberConverter memberConverter;
+    private final MemberMapper memberMapper;
 
     @GetMapping("/loginSuccess")
     public ResponseEntity<String> loginSuccess(@AuthenticationPrincipal OAuth2User user) {
         Long kakaoIdLong = user.getAttribute("id");
         String kakaoId = String.valueOf(kakaoIdLong);
-
         log.info("카카오 로그인 성공: {}", kakaoId);
         try {
-            memberQueryService.processLoginSuccess(kakaoId);
-            return ResponseEntity.ok("로그인 성공: " + kakaoId);
-        } catch (CommonException e) {
-            log.error("로그인 성공 처리 오류: {}", e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage());
+            Member existingMember = memberMapper.findByKakaoId(kakaoId);
+            boolean isNewMember = (existingMember == null);
+
+            if (isNewMember) return ResponseEntity.ok("신규 회원 - 추가 정보 입력 필요");
+            else return ResponseEntity.ok("기존 회원 로그인 성공");
         } catch (Exception e) {
-            log.error("예상치 못한 오류", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("로그인 성공 처리 중 오류가 발생했습니다");
+            log.error("로그인 성공 처리 중 오류 발생", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("로그인 성공 처리 중 오류 발생");
         }
     }
 

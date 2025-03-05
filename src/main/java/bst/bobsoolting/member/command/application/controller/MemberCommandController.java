@@ -1,5 +1,6 @@
 package bst.bobsoolting.member.command.application.controller;
 
+import bst.bobsoolting.common.exception.CommonException;
 import bst.bobsoolting.member.command.application.controller.docs.MemberCommandControllerDocs;
 import bst.bobsoolting.member.command.application.dto.MemberDTO;
 import bst.bobsoolting.member.command.application.mapper.MemberConverter;
@@ -24,13 +25,41 @@ public class MemberCommandController implements MemberCommandControllerDocs {
     private final MemberCommandService memberCommandService;
     private final MemberConverter memberConverter;
 
-    @PostMapping("/complete-registration")
-    public ResponseEntity<ResponseCreateMemberVO> completeRegistration(@RequestBody RequestAdditionalRegisterVO info) {
-        log.info("추가 회원가입 정보 수신: {}", info);
-        MemberDTO newMemberDTO = memberConverter.fromAdditionalVOToEntity(info);
-        MemberDTO member = memberCommandService.createMember(newMemberDTO);
-        ResponseCreateMemberVO memberVO = memberConverter.fromEntityToCreateVO(member);
-        return ResponseEntity.ok(memberVO);
+    @PostMapping("/register-basic-info")
+    public ResponseEntity<String> registerBasicInfo(@AuthenticationPrincipal OAuth2User user) {
+        Long kakaoIdLong = user.getAttribute("id");
+        String kakaoId = String.valueOf(kakaoIdLong);
+
+        log.info("신규 회원 기본 정보 저장 요청: {}", kakaoId);
+        try {
+            memberCommandService.createBasicMember(kakaoId);
+            return ResponseEntity.ok("신규 회원 기본 정보 저장 완료");
+        } catch (CommonException e) {
+            log.error("회원 기본 정보 저장 오류: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            log.error("예상치 못한 오류 발생", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("회원 기본 정보 저장 중 오류 발생");
+        }
+    }
+
+    @PatchMapping("/complete-registration")
+    public ResponseEntity<ResponseCreateMemberVO> completeRegistration(@AuthenticationPrincipal OAuth2User user, @RequestBody RequestAdditionalRegisterVO info) {
+        Long kakaoIdLong = user.getAttribute("id");
+        String kakaoId = String.valueOf(kakaoIdLong);
+        log.info("추가 회원가입 정보 수신: kakaoId={}, 추가 정보={}", kakaoId, info);
+
+        try {
+            MemberDTO updatedMember = memberCommandService.updateMemberAdditionalInfo(kakaoId, info);
+            ResponseCreateMemberVO response = memberConverter.fromEntityToCreateVO(updatedMember);
+            return ResponseEntity.ok(response);
+        } catch (CommonException e) {
+            log.error("추가 회원가입 정보 업데이트 오류: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        } catch (Exception e) {
+            log.error("예상치 못한 오류 발생", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
     @PatchMapping("/update-profile")
