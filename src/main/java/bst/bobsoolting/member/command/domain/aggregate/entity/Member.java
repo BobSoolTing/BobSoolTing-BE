@@ -18,8 +18,7 @@ import java.util.Date;
 public class Member {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_id", nullable = false)
+    @Column(name = "member_id", nullable = false, unique = true)
     private String memberId;
 
     @Column(name = "kakao_id", nullable = false, unique = true)
