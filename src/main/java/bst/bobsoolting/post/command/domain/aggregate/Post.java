@@ -3,7 +3,7 @@ package bst.bobsoolting.post.command.domain.aggregate;
 import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-//포스트 임
+// 포스트 자바임
 @Getter
 @Setter
 @AllArgsConstructor
