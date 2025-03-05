@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
-import io.swagger.v3.oas.annotations.servers.Server;
 import org.springdoc.core.customizers.OpenApiCustomizer;
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
@@ -14,7 +13,6 @@ import org.springframework.context.annotation.Profile;
 
 @OpenAPIDefinition(
         info = @Info(title = "BobSoolTing API 명세서", version = "1.0", description = "BobSoolTing API 명세서"),
-        servers = {@Server(url = "http://localhost:8080", description = "로컬 서버")},
         security = {@SecurityRequirement(name = "bearerAuth")}
 )
 @SecurityScheme(
