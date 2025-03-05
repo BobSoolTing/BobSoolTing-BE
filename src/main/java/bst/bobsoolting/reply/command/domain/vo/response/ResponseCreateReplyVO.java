@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 @ToString
-@Schema(description = "대댓글 생성 응답 객체")
+@Schema(name = "ResponseCreateReplyVO", description = "대댓글 생성 응답 객체")
 public class ResponseCreateReplyVO {
 
     @Schema(description = "생성된 대댓글 ID", example = "2001")

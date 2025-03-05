@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @ToString
-@Schema(description = "댓글과 대댓글 응답 객체")
+@Schema(name = "ResponseCommentWithRepliesVO", description = "댓글과 대댓글 응답 객체")
 public class ResponseCommentWithRepliesVO {
 
     @Schema(description = "댓글 정보")

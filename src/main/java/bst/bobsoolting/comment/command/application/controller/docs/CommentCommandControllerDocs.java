@@ -4,7 +4,6 @@ import bst.bobsoolting.comment.command.domain.vo.request.RequestCreateCommentVO;
 import bst.bobsoolting.comment.command.domain.vo.request.RequestUpdateCommentVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.ResponseEntity;

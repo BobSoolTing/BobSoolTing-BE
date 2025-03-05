@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Schema(description = "회원 프로필 응답 객체")
+@Schema(name = "ResponseProfileVO", description = "회원 프로필 응답 객체")
 public class ResponseProfileVO {
 
     @Schema(description = "닉네임", example = "홍길동")

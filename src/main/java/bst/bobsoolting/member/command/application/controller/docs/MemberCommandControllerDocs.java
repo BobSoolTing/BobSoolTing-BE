@@ -6,7 +6,7 @@ import bst.bobsoolting.member.command.domain.vo.response.ResponseCreateMemberVO;
 import bst.bobsoolting.member.command.domain.vo.response.ResponseProfileVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import org.springframework.web.bind.annotation.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.ResponseEntity;

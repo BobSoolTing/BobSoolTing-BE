@@ -12,7 +12,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Builder
 @ToString
-@Schema(description = "추가 회원가입 요청 정보") // 전체 클래스에 대한 설명
+@Schema(name = "RequestAdditionalRegisterVO", description = "추가 회원가입 요청 정보")
 public class RequestAdditionalRegisterVO {
 
     @Schema(description = "카카오 ID", example = "1234567890")
