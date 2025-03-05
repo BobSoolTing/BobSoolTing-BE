@@ -26,7 +26,7 @@ public class ReplyCommandController {
     private final ReplyCommandService replyService;
     private final ReplyConverter replyConverter;
 
-    @Operation(description = "대댓글 등록")
+    @Operation(summary = "대댓글 등록", description = "대댓글 등록 기능입니다.")
     @PostMapping
     public ResponseEntity<?> createReply(@RequestBody RequestCreateReplyVO request, @AuthenticationPrincipal OAuth2User user) {
         log.info("대댓글 등록 요청: {}", request);
@@ -45,7 +45,7 @@ public class ReplyCommandController {
         }
     }
 
-    @Operation(description = "대댓글 수정")
+    @Operation(summary = "대댓글 수정", description = "대댓글 수정 기능입니다.")
     @PatchMapping("/{replyId}")
     public ResponseEntity<?> updateReply(@PathVariable Long replyId, @RequestBody RequestUpdateReplyVO request, @AuthenticationPrincipal OAuth2User user) {
         log.info("대댓글 수정 요청 - replyId: {}, 데이터: {}", replyId, request);
@@ -66,7 +66,7 @@ public class ReplyCommandController {
         }
     }
 
-    @Operation(description = "대댓글 삭제 (soft delete)")
+    @Operation(summary = "대댓글 삭제 (soft delete)", description = "대댓글 삭제 기능입니다.")
     @PatchMapping("/deactivate/{replyId}")
     public ResponseEntity<?> deleteReply(@PathVariable Long replyId, @AuthenticationPrincipal OAuth2User user) {
         log.info("대댓글 삭제 요청 - replyId: {}", replyId);
