@@ -4,6 +4,7 @@ import bst.bobsoolting.common.exception.CommonException;
 import bst.bobsoolting.common.exception.ErrorCode;
 import bst.bobsoolting.member.command.application.dto.MemberDTO;
 import bst.bobsoolting.member.command.application.mapper.MemberConverter;
+import bst.bobsoolting.member.command.domain.aggregate.MemberGender;
 import bst.bobsoolting.member.command.domain.aggregate.MemberRole;
 import bst.bobsoolting.member.command.domain.aggregate.entity.Member;
 import bst.bobsoolting.member.command.domain.repository.MemberRepository;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.UUID;
 
 @Slf4j
@@ -92,8 +94,15 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
     private Member createMember(String kakaoId) {
         Member newMember = Member.builder()
-                .memberId(generateMemberId())
                 .kakaoId(kakaoId)
+                .nickname("신규 유저")
+                .phone("")
+                .profileImage("")
+                .gender(MemberGender.DEFAULT)
+                .birth(new Date())
+                .university("미입력")
+                .department("미입력")
+                .studentNumber(0)
                 .rating(0.0f)
                 .memberRole(MemberRole.ROLE_USER)
                 .createdAt(LocalDateTime.now())
@@ -101,6 +110,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
                 .build();
         return newMember;
     }
+
 
     private String generateMemberId() {
         return LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")) + UUID.randomUUID().toString().replace("-", "").substring(20);
