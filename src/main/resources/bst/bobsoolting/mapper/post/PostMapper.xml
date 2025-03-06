@@ -34,7 +34,7 @@
 <select id="findByMemberId" resultMap="PostResultMap" parameterType="java.lang.String"> SELECT * FROM post WHERE member_id = #{memberId} AND post_status = true </select>
 
 <!--  게시글 등록  -->
-<insert id="insertPost" parameterType="bst.bobsoolting.post.command.domain.aggregate.Post">
+<insert id="createPost" parameterType="bst.bobsoolting.post.command.domain.aggregate.Post">
 INSERT INTO post ( category, title, content, images, max_participants, participants, recruitment_status, date, location, post_status, created_at, updated_at, member_id ) VALUES ( #{category}, #{title}, #{content}, #{images}, #{maxParticipants}, #{participants}, #{recruitmentStatus}, #{date}, #{location}, #{postStatus}, #{createdAt}, #{updatedAt}, #{memberId} )
 <selectKey keyProperty="postId" resultType="long" order="AFTER"> SELECT LAST_INSERT_ID() </selectKey>
 </insert>

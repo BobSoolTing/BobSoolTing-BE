@@ -12,7 +12,7 @@ import java.util.List;
 public interface PostRepository {
 
 	// 게시글 등록
-    void insertPost(Post post);
+    void createPost(Post post);
 
     // 게시글 수정
     void updatePost(Post post);

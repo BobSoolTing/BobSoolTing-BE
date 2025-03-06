@@ -23,7 +23,7 @@ public class PostCommandServiceImpl implements PostCommandService {
         postDTO.setUpdatedAt(LocalDateTime.now());
 
         Post post = PostConverter.toEntity(postDTO);
-        postRepository.insertPost(post);
+        postRepository.createPost(post);
 
         return PostConverter.toDTO(post);
     }

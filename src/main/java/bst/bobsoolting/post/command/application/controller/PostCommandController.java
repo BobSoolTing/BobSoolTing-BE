@@ -16,7 +16,7 @@ public class PostCommandController {
     /**
      * 게시글 생성
      */
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<PostDTO> createPost(@RequestBody PostDTO postDTO) {
         PostDTO created = postCommandService.createPost(postDTO);
         return ResponseEntity.ok(created);
