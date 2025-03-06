@@ -7,8 +7,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.Map;
@@ -39,7 +41,7 @@ public interface MemberQueryControllerDocs {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("/my-page")
-    ResponseEntity<ResponseProfileVO> getMyProfile();
+    ResponseEntity<ResponseProfileVO> getMyProfile(@RequestHeader(HttpHeaders.AUTHORIZATION) String token);
 
     @Operation(summary = "프로필 상세 조회", description = "현재 로그인한 사용자의 상세 프로필을 조회하는 API")
     @ApiResponses({
@@ -48,5 +50,5 @@ public interface MemberQueryControllerDocs {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("/profile")
-    ResponseEntity<ResponseDetailVO> getMyProfileDetails();
+    ResponseEntity<ResponseDetailVO> getMyProfileDetails(@RequestHeader(HttpHeaders.AUTHORIZATION) String token);
 }

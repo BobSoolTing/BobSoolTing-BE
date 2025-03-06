@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -21,7 +22,7 @@ public interface ReplyCommandControllerDocs {
             @ApiResponse(responseCode = "400", description = "잘못된 요청")
     })
     @PostMapping
-    ResponseEntity<?> createReply(@RequestBody RequestCreateReplyVO request);
+    ResponseEntity<?> createReply(@RequestBody RequestCreateReplyVO request, @RequestHeader(HttpHeaders.AUTHORIZATION) String token);
 
     @Operation(summary = "대댓글 수정", description = "대댓글을 수정하는 API")
     @ApiResponses({
@@ -29,7 +30,7 @@ public interface ReplyCommandControllerDocs {
             @ApiResponse(responseCode = "400", description = "잘못된 요청")
     })
     @PatchMapping("/{replyId}")
-    ResponseEntity<?> updateReply(@PathVariable Long replyId, @RequestBody RequestUpdateReplyVO request);
+    ResponseEntity<?> updateReply(@PathVariable Long replyId, @RequestBody RequestUpdateReplyVO request, @RequestHeader(HttpHeaders.AUTHORIZATION) String token);
 
     @Operation(summary = "대댓글 삭제", description = "대댓글을 삭제하는 API")
     @ApiResponses({
@@ -37,5 +38,5 @@ public interface ReplyCommandControllerDocs {
             @ApiResponse(responseCode = "400", description = "잘못된 요청")
     })
     @PatchMapping("/deactivate/{replyId}")
-    ResponseEntity<?> deleteReply(@PathVariable Long replyId);
+    ResponseEntity<?> deleteReply(@PathVariable Long replyId, @RequestHeader(HttpHeaders.AUTHORIZATION) String token);
 }

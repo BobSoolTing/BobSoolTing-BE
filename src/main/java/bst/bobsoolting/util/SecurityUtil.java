@@ -1,31 +1,27 @@
 package bst.bobsoolting.util;
 
-import org.springframework.security.core.Authentication;
+import bst.bobsoolting.security.JwtTokenProvider;
+import io.jsonwebtoken.Claims;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 
-import java.util.Map;
-
+@Component
+@RequiredArgsConstructor
 public class SecurityUtil {
 
-    public static OAuth2User getCurrentOAuth2User() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof OAuth2User) {
-            return (OAuth2User) authentication.getPrincipal();
-        }
-        return null;
+    private final JwtTokenProvider jwtTokenProvider;
+
+    public String getKakaoIdFromToken(String token) {
+        Claims claims = jwtTokenProvider.parseToken(token);
+        return claims.getSubject();
     }
 
-    public static Map<String, Object> getCurrentUserAttributes() {
-        OAuth2User user = getCurrentOAuth2User();
-        return user != null ? user.getAttributes() : null;
-    }
-
-    public static String getKakaoId() {
-        Map<String, Object> attributes = getCurrentUserAttributes();
-        if (attributes != null) {
-            Object kakaoId = attributes.get("id");
-            return kakaoId != null ? kakaoId.toString() : null;
+    public static String getCurrentUserId() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof UserDetails) {
+            return ((UserDetails) principal).getUsername();
         }
         return null;
     }

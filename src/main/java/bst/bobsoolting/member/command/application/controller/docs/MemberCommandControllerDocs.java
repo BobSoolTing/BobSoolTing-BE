@@ -8,11 +8,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "회원 API", description = "회원 관리 관련 API 문서")
 @RequestMapping("api/member")
@@ -25,7 +23,7 @@ public interface MemberCommandControllerDocs {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @PostMapping("/basic-info")
-    ResponseEntity<String> registerBasicInfo();
+    ResponseEntity<String> registerBasicInfo(@RequestHeader(HttpHeaders.AUTHORIZATION) String token);
 
     @Operation(summary = "추가 회원가입 정보 등록", description = "추가 회원가입 정보를 등록하는 API (신규 회원 추가 정보 입력)")
     @ApiResponses({
@@ -34,7 +32,7 @@ public interface MemberCommandControllerDocs {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @PatchMapping("/complete")
-    ResponseEntity<ResponseCreateMemberVO> completeRegistration(@RequestBody RequestAdditionalRegisterVO info);
+    ResponseEntity<ResponseCreateMemberVO> completeRegistration(@RequestBody RequestAdditionalRegisterVO info, @RequestHeader(HttpHeaders.AUTHORIZATION) String token);
 
     @Operation(summary = "회원 정보 수정", description = "회원 프로필을 수정하는 API")
     @ApiResponses({
@@ -43,5 +41,5 @@ public interface MemberCommandControllerDocs {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @PatchMapping("/profile")
-    ResponseEntity<ResponseProfileVO> updateProfile(@RequestBody RequestUpdateProfileVO updateInfo);
+    ResponseEntity<ResponseProfileVO> updateProfile(@RequestBody RequestUpdateProfileVO updateInfo, @RequestHeader(HttpHeaders.AUTHORIZATION) String token);
 }

@@ -6,6 +6,7 @@ import bst.bobsoolting.common.exception.CommonException;
 import bst.bobsoolting.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,10 +17,11 @@ import org.springframework.web.bind.annotation.*;
 public class PostLikeCommandController implements PostLikeCommandControllerDocs {
 
     private final PostLikeCommandService postLikeCommandService;
+    private final SecurityUtil securityUtil;
 
     @PostMapping("/{postId}")
-    public ResponseEntity<String> likePost(@PathVariable Long postId) {
-        String kakaoId = SecurityUtil.getKakaoId();
+    public ResponseEntity<String> likePost(@PathVariable Long postId, @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+        String kakaoId = securityUtil.getKakaoIdFromToken(token.replace("Bearer ", ""));
         log.info("좋아요 요청 - postId: {}, kakaoId: {}", postId, kakaoId);
         try {
             postLikeCommandService.likePost(postId, kakaoId);

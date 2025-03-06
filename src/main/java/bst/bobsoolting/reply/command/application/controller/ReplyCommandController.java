@@ -12,6 +12,7 @@ import bst.bobsoolting.common.exception.CommonException;
 import bst.bobsoolting.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,11 +24,12 @@ public class ReplyCommandController implements ReplyCommandControllerDocs {
 
     private final ReplyCommandService replyService;
     private final ReplyConverter replyConverter;
+    private final SecurityUtil securityUtil;
 
     @PostMapping
-    public ResponseEntity<?> createReply(@RequestBody RequestCreateReplyVO request) {
+    public ResponseEntity<?> createReply(@RequestBody RequestCreateReplyVO request, @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         log.info("대댓글 등록 요청: {}", request);
-        String kakaoId = SecurityUtil.getKakaoId();
+        String kakaoId = securityUtil.getKakaoIdFromToken(token.replace("Bearer ", ""));
         try {
             ReplyDTO replyDTO = replyConverter.fromCreateVOToDTO(request);
             ReplyDTO savedReplyDTO = replyService.createReply(replyDTO, kakaoId);
@@ -44,9 +46,9 @@ public class ReplyCommandController implements ReplyCommandControllerDocs {
     }
 
     @PatchMapping("/{replyId}")
-    public ResponseEntity<?> updateReply(@PathVariable Long replyId, @RequestBody RequestUpdateReplyVO request) {
+    public ResponseEntity<?> updateReply(@PathVariable Long replyId, @RequestBody RequestUpdateReplyVO request, @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         log.info("대댓글 수정 요청 - replyId: {}, 데이터: {}", replyId, request);
-        String kakaoId = SecurityUtil.getKakaoId();
+        String kakaoId = securityUtil.getKakaoIdFromToken(token.replace("Bearer ", ""));
         try {
             ReplyDTO replyDTO = replyConverter.fromUpdateVOToDTO(request);
             replyDTO.setReplyId(replyId);
@@ -65,9 +67,9 @@ public class ReplyCommandController implements ReplyCommandControllerDocs {
     }
 
     @PatchMapping("/deactivate/{replyId}")
-    public ResponseEntity<?> deleteReply(@PathVariable Long replyId) {
+    public ResponseEntity<?> deleteReply(@PathVariable Long replyId, @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         log.info("대댓글 삭제 요청 - replyId: {}", replyId);
-        String kakaoId = SecurityUtil.getKakaoId();
+        String kakaoId = securityUtil.getKakaoIdFromToken(token.replace("Bearer ", ""));
         try {
             ReplyDTO deletedReply = replyService.deleteReply(replyId, kakaoId);
             log.info("삭제된 replyId: {}, 대댓글 상태: {}", deletedReply.getReplyId(), deletedReply.getReplyStatus());

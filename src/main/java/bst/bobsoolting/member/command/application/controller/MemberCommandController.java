@@ -12,6 +12,7 @@ import bst.bobsoolting.member.command.domain.vo.response.ResponseProfileVO;
 import bst.bobsoolting.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,10 +24,12 @@ public class MemberCommandController implements MemberCommandControllerDocs {
 
     private final MemberCommandService memberCommandService;
     private final MemberConverter memberConverter;
+    private final SecurityUtil securityUtil;
+
 
     @PostMapping("/basic-info")
-    public ResponseEntity<String> registerBasicInfo() {
-        String kakaoId = SecurityUtil.getKakaoId();
+    public ResponseEntity<String> registerBasicInfo(@RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+        String kakaoId = securityUtil.getKakaoIdFromToken(token.replace("Bearer ", ""));
         log.info("신규 회원 기본 정보 저장 요청: {}", kakaoId);
         try {
             memberCommandService.createBasicMember(kakaoId);
@@ -41,8 +44,8 @@ public class MemberCommandController implements MemberCommandControllerDocs {
     }
 
     @PatchMapping("/complete")
-    public ResponseEntity<ResponseCreateMemberVO> completeRegistration(@RequestBody RequestAdditionalRegisterVO info) {
-        String kakaoId = SecurityUtil.getKakaoId();
+    public ResponseEntity<ResponseCreateMemberVO> completeRegistration(@RequestBody RequestAdditionalRegisterVO info, @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+        String kakaoId = securityUtil.getKakaoIdFromToken(token.replace("Bearer ", ""));
         log.info("추가 회원가입 정보 수신: kakaoId={}, 추가 정보={}", kakaoId, info);
         try {
             MemberDTO updatedMember = memberCommandService.updateMemberAdditionalInfo(kakaoId, info);
@@ -58,8 +61,8 @@ public class MemberCommandController implements MemberCommandControllerDocs {
     }
 
     @PatchMapping("/profile")
-    public ResponseEntity<ResponseProfileVO> updateProfile(@RequestBody RequestUpdateProfileVO updateInfo) {
-        String kakaoId = SecurityUtil.getKakaoId();
+    public ResponseEntity<ResponseProfileVO> updateProfile(@RequestBody RequestUpdateProfileVO updateInfo, @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+        String kakaoId = securityUtil.getKakaoIdFromToken(token.replace("Bearer ", ""));
         log.info("프로필 수정 요청: {} -> {}", kakaoId, updateInfo);
         MemberDTO updatedMember = memberCommandService.updateMemberProfile(kakaoId, updateInfo);
         ResponseProfileVO responseProfileVO = memberConverter.fromEntityToProfileVO(updatedMember);

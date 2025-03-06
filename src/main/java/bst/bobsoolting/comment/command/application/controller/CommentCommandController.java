@@ -12,6 +12,7 @@ import bst.bobsoolting.common.exception.CommonException;
 import bst.bobsoolting.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,11 +25,12 @@ public class CommentCommandController implements CommentCommandControllerDocs {
 
     private final CommentCommandService commentService;
     private final CommentConverter commentConverter;
+    private final SecurityUtil securityUtil;
 
     @PostMapping
-    public ResponseEntity<?> createComment(@RequestBody RequestCreateCommentVO request) {
+    public ResponseEntity<?> createComment(@RequestBody RequestCreateCommentVO request, @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         log.info("등록 요청된 댓글 데이터 : {}", request);
-        String kakaoId = SecurityUtil.getKakaoId();
+        String kakaoId = securityUtil.getKakaoIdFromToken(token.replace("Bearer ", ""));
         try {
             CommentDTO commentDTO = commentConverter.fromCreateVOToDTO(request);
             CommentDTO saveCommentDTO = commentService.createComment(commentDTO, kakaoId);
@@ -46,9 +48,9 @@ public class CommentCommandController implements CommentCommandControllerDocs {
 
 
     @PatchMapping("/{commentId}")
-    public ResponseEntity<?> updateComment(@PathVariable Long commentId, @RequestBody RequestUpdateCommentVO request) {
+    public ResponseEntity<?> updateComment(@PathVariable Long commentId, @RequestBody RequestUpdateCommentVO request, @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         log.info("수정 요청된 commentId: {}, 데이터: {}", commentId, request);
-        String kakaoId = SecurityUtil.getKakaoId();
+        String kakaoId = securityUtil.getKakaoIdFromToken(token.replace("Bearer ", ""));
         try {
             CommentDTO commentDTO = commentConverter.fromUpdateVOToDTO(request);
             commentDTO.setCommentId(commentId);
@@ -67,9 +69,9 @@ public class CommentCommandController implements CommentCommandControllerDocs {
     }
 
     @PatchMapping("/deactivate/{commentId}")
-    public ResponseEntity<?> deleteComment(@PathVariable Long commentId) {
+    public ResponseEntity<?> deleteComment(@PathVariable Long commentId, @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         log.info("삭제 요청된 댓글 ID : {}", commentId);
-        String kakaoId = SecurityUtil.getKakaoId();
+        String kakaoId = securityUtil.getKakaoIdFromToken(token.replace("Bearer ", ""));
         try {
             CommentDTO deletedComment = commentService.deleteComment(commentId, kakaoId);
             log.info("삭제된 commentId : {}, 해당 댓글의 상태 : {}", deletedComment.getCommentId(), deletedComment.getCommentStatus());
