@@ -9,12 +9,11 @@ import bst.bobsoolting.comment.command.domain.vo.request.RequestUpdateCommentVO;
 import bst.bobsoolting.comment.command.domain.vo.response.ResponseCreateCommentVO;
 import bst.bobsoolting.comment.command.domain.vo.response.ResponseUpdateCommentVO;
 import bst.bobsoolting.common.exception.CommonException;
+import bst.bobsoolting.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -27,10 +26,9 @@ public class CommentCommandController implements CommentCommandControllerDocs {
     private final CommentConverter commentConverter;
 
     @PostMapping
-    public ResponseEntity<?> createComment(@RequestBody RequestCreateCommentVO request, @AuthenticationPrincipal OAuth2User user) {
+    public ResponseEntity<?> createComment(@RequestBody RequestCreateCommentVO request) {
         log.info("등록 요청된 댓글 데이터 : {}", request);
-        Long kakaoIdLong = user.getAttribute("id");
-        String kakaoId = String.valueOf(kakaoIdLong);
+        String kakaoId = SecurityUtil.getKakaoId();
         try {
             CommentDTO commentDTO = commentConverter.fromCreateVOToDTO(request);
             CommentDTO saveCommentDTO = commentService.createComment(commentDTO, kakaoId);
@@ -48,10 +46,9 @@ public class CommentCommandController implements CommentCommandControllerDocs {
 
 
     @PatchMapping("/{commentId}")
-    public ResponseEntity<?> updateComment(@PathVariable Long commentId, @RequestBody RequestUpdateCommentVO request, @AuthenticationPrincipal OAuth2User user) {
+    public ResponseEntity<?> updateComment(@PathVariable Long commentId, @RequestBody RequestUpdateCommentVO request) {
         log.info("수정 요청된 commentId: {}, 데이터: {}", commentId, request);
-        Long kakaoIdLong = user.getAttribute("id");
-        String kakaoId = String.valueOf(kakaoIdLong);
+        String kakaoId = SecurityUtil.getKakaoId();
         try {
             CommentDTO commentDTO = commentConverter.fromUpdateVOToDTO(request);
             commentDTO.setCommentId(commentId);
@@ -70,10 +67,9 @@ public class CommentCommandController implements CommentCommandControllerDocs {
     }
 
     @PatchMapping("/deactivate/{commentId}")
-    public ResponseEntity<?> deleteComment(@PathVariable Long commentId, @AuthenticationPrincipal OAuth2User user) {
+    public ResponseEntity<?> deleteComment(@PathVariable Long commentId) {
         log.info("삭제 요청된 댓글 ID : {}", commentId);
-        Long kakaoIdLong = user.getAttribute("id");
-        String kakaoId = String.valueOf(kakaoIdLong);
+        String kakaoId = SecurityUtil.getKakaoId();
         try {
             CommentDTO deletedComment = commentService.deleteComment(commentId, kakaoId);
             log.info("삭제된 commentId : {}, 해당 댓글의 상태 : {}", deletedComment.getCommentId(), deletedComment.getCommentStatus());

@@ -22,7 +22,7 @@ public interface MemberQueryControllerDocs {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("/loginSuccess")
-    ResponseEntity<String> loginSuccess(@AuthenticationPrincipal OAuth2User user);
+    ResponseEntity<String> loginSuccess();
 
     @Operation(summary = "카카오 OAuth2 로그인 실패 처리", description = "카카오 로그인 실패 시 처리")
     @ApiResponses({
@@ -38,7 +38,7 @@ public interface MemberQueryControllerDocs {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("/my-page")
-    ResponseEntity<ResponseProfileVO> getMyProfile(@AuthenticationPrincipal OAuth2User user);
+    ResponseEntity<ResponseProfileVO> getMyProfile();
 
     @Operation(summary = "프로필 상세 조회", description = "현재 로그인한 사용자의 상세 프로필을 조회하는 API")
     @ApiResponses({
@@ -47,5 +47,5 @@ public interface MemberQueryControllerDocs {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("/profile")
-    ResponseEntity<ResponseDetailVO> getMyProfileDetails(@AuthenticationPrincipal OAuth2User user);
+    ResponseEntity<ResponseDetailVO> getMyProfileDetails();
 }

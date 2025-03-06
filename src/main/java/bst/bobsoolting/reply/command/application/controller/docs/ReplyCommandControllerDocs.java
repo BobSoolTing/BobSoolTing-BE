@@ -21,7 +21,7 @@ public interface ReplyCommandControllerDocs {
             @ApiResponse(responseCode = "400", description = "잘못된 요청")
     })
     @PostMapping
-    ResponseEntity<?> createReply(@RequestBody RequestCreateReplyVO request, @AuthenticationPrincipal OAuth2User user);
+    ResponseEntity<?> createReply(@RequestBody RequestCreateReplyVO request);
 
     @Operation(summary = "대댓글 수정", description = "대댓글을 수정하는 API")
     @ApiResponses({
@@ -29,7 +29,7 @@ public interface ReplyCommandControllerDocs {
             @ApiResponse(responseCode = "400", description = "잘못된 요청")
     })
     @PatchMapping("/{replyId}")
-    ResponseEntity<?> updateReply(@PathVariable Long replyId, @RequestBody RequestUpdateReplyVO request, @AuthenticationPrincipal OAuth2User user);
+    ResponseEntity<?> updateReply(@PathVariable Long replyId, @RequestBody RequestUpdateReplyVO request);
 
     @Operation(summary = "대댓글 삭제", description = "대댓글을 삭제하는 API")
     @ApiResponses({
@@ -37,5 +37,5 @@ public interface ReplyCommandControllerDocs {
             @ApiResponse(responseCode = "400", description = "잘못된 요청")
     })
     @PatchMapping("/deactivate/{replyId}")
-    ResponseEntity<?> deleteReply(@PathVariable Long replyId, @AuthenticationPrincipal OAuth2User user);
+    ResponseEntity<?> deleteReply(@PathVariable Long replyId);
 }

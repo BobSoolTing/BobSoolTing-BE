@@ -3,12 +3,11 @@ package bst.bobsoolting.like.command.application.controller;
 import bst.bobsoolting.like.command.application.controller.docs.PostLikeCommandControllerDocs;
 import bst.bobsoolting.like.command.application.service.PostLikeCommandService;
 import bst.bobsoolting.common.exception.CommonException;
+import bst.bobsoolting.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,10 +18,8 @@ public class PostLikeCommandController implements PostLikeCommandControllerDocs 
     private final PostLikeCommandService postLikeCommandService;
 
     @PostMapping("/{postId}")
-    public ResponseEntity<String> likePost(@PathVariable Long postId, @AuthenticationPrincipal OAuth2User user) {
-        Long kakaoIdLong = user.getAttribute("id");
-        String kakaoId = String.valueOf(kakaoIdLong);
-
+    public ResponseEntity<String> likePost(@PathVariable Long postId) {
+        String kakaoId = SecurityUtil.getKakaoId();
         log.info("좋아요 요청 - postId: {}, kakaoId: {}", postId, kakaoId);
         try {
             postLikeCommandService.likePost(postId, kakaoId);
