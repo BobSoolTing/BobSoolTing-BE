@@ -10,15 +10,17 @@ import bst.bobsoolting.member.query.repository.MemberMapper;
 import bst.bobsoolting.member.query.service.MemberQueryService;
 import bst.bobsoolting.common.exception.CommonException;
 import bst.bobsoolting.util.SecurityUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @Slf4j
@@ -30,21 +32,25 @@ public class MemberQueryController implements MemberQueryControllerDocs {
     private final MemberMapper memberMapper;
 
     @GetMapping("/loginSuccess")
-    public ResponseEntity<String> loginSuccess() {
+    public ResponseEntity<Map<String, String>> loginSuccess(HttpServletRequest request) {
         String kakaoId = SecurityUtil.getKakaoId();
-        try {
-            log.info("카카오 로그인 성공: {}", kakaoId);
-
-            Member existingMember = memberMapper.findByKakaoId(kakaoId);
-            boolean isNewMember = (existingMember == null);
-
-            if (isNewMember) return ResponseEntity.ok("신규 회원 - 추가 정보 입력 필요");
-            else return ResponseEntity.ok("기존 회원 로그인 성공");
-        } catch (Exception e) {
-            log.error("로그인 성공 처리 중 오류 발생", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("로그인 성공 처리 중 오류 발생");
+        if (kakaoId == null) {
+            log.error("❌ OAuth2User 정보가 없습니다. 인증 실패 가능성 있음.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "OAuth2 인증 정보가 없습니다."));
         }
+        log.info("✅ 카카오 로그인 성공: {}", kakaoId);
+
+        Member existingMember = memberMapper.findByKakaoId(kakaoId);
+        boolean isNewMember = (existingMember == null);
+        String accessToken = extractAccessTokenFromSecurityContext();
+
+        Map<String, String> response = new HashMap<>();
+        response.put("message", isNewMember ? "신규 회원 - 추가 정보 입력 필요" : "기존 회원 로그인 성공");
+        response.put("access_token", accessToken);
+
+        return ResponseEntity.ok(response);
     }
+
 
     @GetMapping("/loginFailure")
     public ResponseEntity<String> loginFailure() {
@@ -84,5 +90,13 @@ public class MemberQueryController implements MemberQueryControllerDocs {
             log.error("예상치 못한 오류", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
+    }
+
+    private String extractAccessTokenFromSecurityContext() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getCredentials() instanceof String token) {
+            return token;
+        }
+        return null;
     }
 }
