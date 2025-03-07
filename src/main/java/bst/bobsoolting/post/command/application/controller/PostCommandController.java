@@ -2,6 +2,7 @@ package bst.bobsoolting.post.command.application.controller;
 
 import bst.bobsoolting.post.command.application.dto.PostDTO;
 import bst.bobsoolting.post.command.application.service.PostCommandService;
+import bst.bobsoolting.post.command.vo.request.RequestUpdatePostVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +17,7 @@ public class PostCommandController {
     /**
      * 게시글 생성
      */
-    @PostMapping("/create")
+    @PostMapping("/")
     public ResponseEntity<PostDTO> createPost(@RequestBody PostDTO postDTO) {
         PostDTO created = postCommandService.createPost(postDTO);
         return ResponseEntity.ok(created);
@@ -27,7 +28,7 @@ public class PostCommandController {
      */
     @PutMapping("/{postId}")
     public ResponseEntity<PostDTO> updatePost(@PathVariable Long postId,
-                                              @RequestBody PostDTO postDTO) {
+                                              @RequestBody RequestUpdatePostVO postDTO) {
         postDTO.setPostId(postId);
         PostDTO updated = postCommandService.updatePost(postDTO);
         return ResponseEntity.ok(updated);
@@ -38,7 +39,7 @@ public class PostCommandController {
      */
     @DeleteMapping("/{postId}")
     public ResponseEntity<Void> softDeletePost(@PathVariable("postId") Long postId) {
-        postCommandService.softDeletePost(postId);
+        postCommandService.deletePost(postId);
         return ResponseEntity.noContent().build();
     }
 
