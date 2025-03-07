@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 @ToString
-@Schema(description = "댓글 수정 요청 객체")
+@Schema(name = "RequestUpdateCommentVO", description = "댓글 수정 요청 객체")
 public class RequestUpdateCommentVO {
 
     @Schema(description = "수정할 댓글 내용", example = "이 부분이 정말 공감됩니다.")

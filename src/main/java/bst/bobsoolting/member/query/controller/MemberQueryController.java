@@ -4,84 +4,88 @@ import bst.bobsoolting.member.command.application.dto.MemberDTO;
 import bst.bobsoolting.member.command.application.mapper.MemberConverter;
 import bst.bobsoolting.member.command.domain.vo.response.ResponseDetailVO;
 import bst.bobsoolting.member.command.domain.vo.response.ResponseProfileVO;
+import bst.bobsoolting.member.query.controller.docs.MemberQueryControllerDocs;
 import bst.bobsoolting.member.query.service.MemberQueryService;
 import bst.bobsoolting.common.exception.CommonException;
-import io.swagger.v3.oas.annotations.Operation;
+import bst.bobsoolting.security.JwtTokenProvider;
+import bst.bobsoolting.util.SecurityUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
-@RequestMapping("api/member")
 @Slf4j
 @RequiredArgsConstructor
-public class MemberQueryController {
+public class MemberQueryController implements MemberQueryControllerDocs {
 
     private final MemberQueryService memberQueryService;
     private final MemberConverter memberConverter;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final SecurityUtil securityUtil;
 
-    @Operation(summary = "카카오 OAuth2 로그인 성공 후 처리")
     @GetMapping("/loginSuccess")
-    public ResponseEntity<?> loginSuccess(@AuthenticationPrincipal OAuth2User user) {
-        log.info("카카오 로그인 성공: {}", user);
-        try {
-            memberQueryService.processLoginSuccess(user);
-            return ResponseEntity.ok("로그인 성공: " + user.getAttribute("id"));
-        } catch (CommonException e) {
-            log.error("로그인 성공 처리 오류: {}", e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            log.error("예상치 못한 오류", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("로그인 성공 처리 중 오류가 발생했습니다");
+    public ResponseEntity<Map<String, String>> loginSuccess(HttpServletRequest request) {
+        String kakaoId = SecurityUtil.getCurrentUserId();
+        if (kakaoId == null) {
+            log.error("❌ 사용자 정보가 없습니다. 인증 실패 가능성 있음.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "인증 정보가 없습니다."));
         }
+        log.info("✅ JWT 기반 로그인 성공: {}", kakaoId);
+
+        String token = jwtTokenProvider.generateToken(kakaoId);
+        log.info("✅ 발급된 JWT: {}", token);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "로그인 성공");
+        response.put("access_token", token);
+
+        return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "카카오 OAuth2 로그인 실패 처리")
     @GetMapping("/loginFailure")
-    public ResponseEntity<?> loginFailure() {
+    public ResponseEntity<String> loginFailure() {
         log.info("카카오 로그인 실패");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 실패");
     }
 
-    @Operation(description = "마이페이지 조회")
     @GetMapping("/my-page")
-    public ResponseEntity<?> getMyProfile(@AuthenticationPrincipal OAuth2User user) {
-        log.info("마이페이지 조회 요청: {}", Optional.ofNullable(user.getAttribute("id")));
+    public ResponseEntity<ResponseProfileVO> getMyProfile(@RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+        String kakaoId = securityUtil.getKakaoIdFromToken(token.replace("Bearer ", ""));
+        log.info("마이페이지 조회 요청: {}", kakaoId);
         try {
-            MemberDTO memberDTO = memberQueryService.getMemberProfile(user);
+            MemberDTO memberDTO = memberQueryService.getMemberProfile(kakaoId);
             ResponseProfileVO profileVO = memberConverter.fromDTOToProfileVO(memberDTO);
             return ResponseEntity.ok(profileVO);
         } catch (CommonException e) {
             log.error("마이페이지 조회 오류: {}", e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(null);
         } catch (Exception e) {
             log.error("예상치 못한 오류", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("마이페이지 조회 중 오류 발생");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 
-    @Operation(description = "프로필 상세 조회")
     @GetMapping("/profile")
-    public ResponseEntity<?> getMyProfileDetails(@AuthenticationPrincipal OAuth2User user) {
-        log.info("프로필 상세 조회 요청: {}", Optional.ofNullable(user.getAttribute("id")));
+    public ResponseEntity<ResponseDetailVO> getMyProfileDetails(@RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+        String kakaoId = securityUtil.getKakaoIdFromToken(token.replace("Bearer ", ""));
+        log.info("프로필 상세 조회 요청: {}", kakaoId);
         try {
-            MemberDTO memberDTO = memberQueryService.getMemberDetail(user);
+            MemberDTO memberDTO = memberQueryService.getMemberDetail(kakaoId);
             ResponseDetailVO detailVO = memberConverter.fromDTOToDetailVO(memberDTO);
             return ResponseEntity.ok(detailVO);
         } catch (CommonException e) {
             log.error("프로필 상세 조회 오류: {}", e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(null);
         } catch (Exception e) {
             log.error("예상치 못한 오류", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("프로필 상세 조회 중 오류 발생");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 }

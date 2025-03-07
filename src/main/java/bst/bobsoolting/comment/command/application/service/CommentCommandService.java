@@ -6,11 +6,12 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 
 public interface CommentCommandService {
     @Transactional
-    CommentDTO createComment(CommentDTO commentDTO, OAuth2User user);
+    CommentDTO createComment(CommentDTO commentDTO, String kakaoId);
 
     @Transactional
-    CommentDTO updateComment(CommentDTO commentDTO, OAuth2User user);
+    CommentDTO updateComment(CommentDTO commentDTO, String kakaoId);
 
     @Transactional
-    CommentDTO deleteComment(Long commentId, OAuth2User user);
+    CommentDTO deleteComment(Long commentId, String kakaoId);
 }
+

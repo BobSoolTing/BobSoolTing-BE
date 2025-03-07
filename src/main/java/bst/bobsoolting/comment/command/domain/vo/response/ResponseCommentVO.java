@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 @ToString
-@Schema(description = "댓글 응답 객체")
+@Schema(name = "ResponseCommentVO", description = "댓글 응답 객체")
 public class ResponseCommentVO {
 
     @Schema(description = "댓글 ID", example = "1001")

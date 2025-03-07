@@ -11,7 +11,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Schema(description = "회원 상세 정보 응답 객체")
+@Schema(name = "ResponseDetailVO", description = "회원 상세 정보 응답 객체")
 public class ResponseDetailVO {
 
     @Schema(description = "닉네임", example = "홍길동")

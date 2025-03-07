@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 @ToString
-@Schema(description = "회원 프로필 수정 요청 정보")
+@Schema(name = "RequestUpdateProfileVO", description = "회원 프로필 수정 요청 정보")
 public class RequestUpdateProfileVO {
 
     @Schema(description = "변경할 프로필 이미지 URL", example = "https://example.com/new-profile.jpg")

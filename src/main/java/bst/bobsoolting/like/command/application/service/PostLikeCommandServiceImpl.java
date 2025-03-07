@@ -24,13 +24,9 @@ public class PostLikeCommandServiceImpl implements PostLikeCommandService {
 
     @Transactional
     @Override
-    public void likePost(Long postId, OAuth2User user) {
+    public void likePost(Long postId, String kakaoId) {
         log.info("좋아요 처리 시작 - postId: {}", postId);
-        try {
-            Long kakaoIdLong = user.getAttribute("id");
-            String kakaoId = String.valueOf(kakaoIdLong);
-
-            Member member = memberMapper.findByKakaoId(kakaoId);
+        try {Member member = memberMapper.findByKakaoId(kakaoId);
             if (member == null) throw new CommonException(ErrorCode.NOT_FOUND_MEMBER);
             String memberId = member.getMemberId();
 

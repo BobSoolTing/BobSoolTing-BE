@@ -1,20 +1,26 @@
 package bst.bobsoolting.config;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.info.Info;
-import io.swagger.v3.oas.models.security.OAuthFlow;
-import io.swagger.v3.oas.models.security.SecurityRequirement;
-import io.swagger.v3.oas.models.security.SecurityScheme;
-import io.swagger.v3.oas.models.security.OAuthFlows;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import org.springdoc.core.customizers.OpenApiCustomizer;
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
-@OpenAPIDefinition(info = @Info(title="BobSoolTing API 명세서",
-        description = "BobSoolTing API 명세서",
-        version = "v1"))
+@OpenAPIDefinition(
+        info = @Info(title = "BobSoolTing API 명세서", version = "1.0", description = "BobSoolTing API 명세서"),
+        security = {@SecurityRequirement(name = "bearerAuth")}
+)
+@SecurityScheme(
+        name = "bearerAuth",
+        type = SecuritySchemeType.HTTP,
+        scheme = "bearer",
+        bearerFormat = "JWT"
+)
 @Configuration
 public class SwaggerConfiguration {
 
@@ -71,15 +77,6 @@ public class SwaggerConfiguration {
     @Bean
     public OpenApiCustomizer buildSecurityOpenApi() {
         return openApi -> openApi
-                .addSecurityItem(new SecurityRequirement().addList("OAuth2"))
-                .components(new io.swagger.v3.oas.models.Components()
-                        .addSecuritySchemes("OAuth2", new SecurityScheme()
-                                .type(SecurityScheme.Type.OAUTH2)
-                                .flows(new OAuthFlows()
-                                        .authorizationCode(new OAuthFlow()
-                                                .authorizationUrl("https://kauth.kakao.com/oauth/authorize")
-                                                .tokenUrl("https://kauth.kakao.com/oauth/token")
-                                        ))));
+                .addSecurityItem(new io.swagger.v3.oas.models.security.SecurityRequirement().addList("bearerAuth"));
     }
-
 }

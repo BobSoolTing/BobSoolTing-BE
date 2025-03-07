@@ -11,7 +11,6 @@ import bst.bobsoolting.member.query.repository.MemberMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -25,10 +24,7 @@ public class CommentCommandServiceImpl implements CommentCommandService {
 
     @Transactional
     @Override
-    public CommentDTO createComment(CommentDTO commentDTO, OAuth2User user) {
-        Long kakaoIdLong = user.getAttribute("id");
-        String kakaoId = String.valueOf(kakaoIdLong);
-
+    public CommentDTO createComment(CommentDTO commentDTO, String kakaoId) {
         Member member = memberMapper.findByKakaoId(kakaoId);
         String memberId = member.getMemberId();
         commentDTO.setMemberId(memberId);
@@ -44,10 +40,7 @@ public class CommentCommandServiceImpl implements CommentCommandService {
 
     @Transactional
     @Override
-    public CommentDTO updateComment(CommentDTO commentDTO, OAuth2User user) {
-        Long kakaoIdLong = user.getAttribute("id");
-        String kakaoId = String.valueOf(kakaoIdLong);
-
+    public CommentDTO updateComment(CommentDTO commentDTO, String kakaoId) {
         Member member = memberMapper.findByKakaoId(kakaoId);
         String memberId = member.getMemberId();
         commentDTO.setMemberId(memberId);
@@ -71,12 +64,9 @@ public class CommentCommandServiceImpl implements CommentCommandService {
 
     @Transactional
     @Override
-    public CommentDTO deleteComment(Long commentId, OAuth2User user) {
+    public CommentDTO deleteComment(Long commentId, String kakaoId) {
         Comment existingComment = commentRepository.findById(commentId).orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_COMMENT));
         log.info("삭제 요청된 Comment 데이터: {}", existingComment);
-
-        Long kakaoIdLong = user.getAttribute("id");
-        String kakaoId = String.valueOf(kakaoIdLong);
 
         Member member = memberMapper.findByKakaoId(kakaoId);
         String memberId = member.getMemberId();

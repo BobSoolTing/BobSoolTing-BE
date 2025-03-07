@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -23,6 +24,10 @@ public class SecurityConfig {
     @Value("${cors.allowedOrigins}")
     private String allowedOrigins;
 
+    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final JwtTokenProvider jwtTokenProvider;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -35,7 +40,10 @@ public class SecurityConfig {
 //                        .requestMatchers("/api/**/admin/**").hasAuthority("ROLE_ADMIN")
                                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**", "/v3/api-docs/swagger-config").permitAll()
 
-                                .requestMatchers("/api/member/complete-registration").permitAll()
+                                .requestMatchers("/api/member/basic-info").permitAll()
+                                .requestMatchers("/api/member/complete").permitAll()
+                                .requestMatchers("/api/member/loginSuccess").permitAll()
+                                .requestMatchers("/api/member/loginFailure").permitAll()
                                 .requestMatchers("/api/member/**").authenticated()
                                 .requestMatchers("/api/comment/**").authenticated()
                                 .requestMatchers("/api/post/**").authenticated()
@@ -47,10 +55,11 @@ public class SecurityConfig {
                                 .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2
-                        .defaultSuccessUrl("/api/member/loginSuccess", true)
+                        .successHandler(oAuth2LoginSuccessHandler)
                         .failureUrl("/api/member/loginFailure")
-                );
-
+                        .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+                )
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 

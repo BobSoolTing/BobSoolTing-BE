@@ -13,7 +13,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Builder
 @ToString
-@Schema(description = "회원 가입 완료 응답 객체")
+@Schema(name = "ResponseCreateMemberVO", description = "회원 가입 완료 응답 객체")
 public class ResponseCreateMemberVO {
 
     @Schema(description = "회원 ID", example = "1")
