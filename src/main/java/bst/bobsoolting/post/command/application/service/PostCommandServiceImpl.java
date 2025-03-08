@@ -23,7 +23,8 @@ public class PostCommandServiceImpl implements PostCommandService {
 
     private final PostRepository postRepository;
     private final PostMapper postMapper;
-    
+    private final PostConverter postConverter; //
+
     @Override
     @Transactional
     public PostDTO createPost(PostDTO postDTO) {
@@ -31,54 +32,51 @@ public class PostCommandServiceImpl implements PostCommandService {
         postDTO.setCreatedAt(LocalDateTime.now());
         postDTO.setUpdatedAt(LocalDateTime.now());
 
-        Post post = PostConverter.toEntity(postDTO);
+        // static 메서드 대신 인스턴스 메서드 호출
+        Post post = postConverter.toEntity(postDTO);
         postRepository.save(post);
 
-        return PostConverter.toDTO(post);
+        return postConverter.toDTO(post);
     }
-    
+
     @Override
     @Transactional
     public PostDTO updatePost(RequestUpdatePostVO updateVO) {
-        // 기존 엔티티 조회
         Post existing = postMapper.findByPostId(updateVO.getPostId());
         if (existing == null) {
             throw new RuntimeException("Post not found with id: " + updateVO.getPostId());
         }
-        
-        // Builder를 활용하여 기존 값 복사 및 수정
+
         Post updatedPost = Post.builder()
-            .postId(existing.getPostId())
-            .category(existing.getCategory())
-            .title(updateVO.getTitle() != null ? updateVO.getTitle() : existing.getTitle())
-            .content(updateVO.getContent() != null ? updateVO.getContent() : existing.getContent())
-            .images(updateVO.getImages() != null ? updateVO.getImages() : existing.getImages())
-            .maxParticipants(updateVO.getMaxParticipants() != null ? updateVO.getMaxParticipants() : existing.getMaxParticipants())
-            .participants(existing.getParticipants()) // 참여자 목록은 그대로 유지
-            .recruitmentStatus(updateVO.getRecruitmentStatus() != null ? updateVO.getRecruitmentStatus() : existing.getRecruitmentStatus())
-            .date(updateVO.getDate() != null ? updateVO.getDate() : existing.getDate())
-            .location(updateVO.getLocation() != null ? updateVO.getLocation() : existing.getLocation())
-            .postStatus(existing.getPostStatus()) // 이 값은 변경하지 않는다고 가정
-            .createdAt(existing.getCreatedAt())
-            .updatedAt(LocalDateTime.now())
-            .memberId(existing.getMemberId())
-            .build();
-            
+                .postId(existing.getPostId())
+                .category(existing.getCategory())
+                .title(updateVO.getTitle() != null ? updateVO.getTitle() : existing.getTitle())
+                .content(updateVO.getContent() != null ? updateVO.getContent() : existing.getContent())
+                .images(updateVO.getImages() != null ? updateVO.getImages() : existing.getImages())
+                .maxParticipants(updateVO.getMaxParticipants() != null ? updateVO.getMaxParticipants() : existing.getMaxParticipants())
+                .participants(existing.getParticipants()) // 참여자 목록은 그대로 유지
+                .recruitmentStatus(updateVO.getRecruitmentStatus() != null ? updateVO.getRecruitmentStatus() : existing.getRecruitmentStatus())
+                .date(updateVO.getDate() != null ? updateVO.getDate() : existing.getDate())
+                .location(updateVO.getLocation() != null ? updateVO.getLocation() : existing.getLocation())
+                .postStatus(existing.getPostStatus()) // 이 값은 변경하지 않는다고 가정
+                .createdAt(existing.getCreatedAt())
+                .updatedAt(LocalDateTime.now())
+                .memberId(existing.getMemberId())
+                .build();
+
         postRepository.save(updatedPost);
-        
-        return PostConverter.toDTO(updatedPost);
+
+        return postConverter.toDTO(updatedPost);
     }
 
     @Override
     @Transactional
     public void deletePost(Long postId) {
-        // 기존 엔티티 조회 (query repository 사용)
         Post existing = postMapper.findByPostId(postId);
         if(existing == null) {
             throw new RuntimeException("Post not found with id: " + postId);
         }
 
-        // Builder를 사용하여 기존 값을 복사하고 postStatus, updatedAt 만 수정
         Post updatedPost = Post.builder()
                 .postId(existing.getPostId())
                 .category(existing.getCategory())
@@ -86,7 +84,7 @@ public class PostCommandServiceImpl implements PostCommandService {
                 .content(existing.getContent())
                 .images(existing.getImages())
                 .maxParticipants(existing.getMaxParticipants())
-                .participants(existing.getParticipants()) // 참여자 목록 그대로 유지
+                .participants(existing.getParticipants())
                 .recruitmentStatus(existing.getRecruitmentStatus())
                 .date(existing.getDate())
                 .location(existing.getLocation())
@@ -99,4 +97,3 @@ public class PostCommandServiceImpl implements PostCommandService {
         postRepository.save(updatedPost);
     }
 }
-

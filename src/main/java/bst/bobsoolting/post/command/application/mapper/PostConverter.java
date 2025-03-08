@@ -3,11 +3,13 @@ package bst.bobsoolting.post.command.application.mapper;
 import bst.bobsoolting.post.command.application.dto.PostDTO;
 import bst.bobsoolting.post.command.domain.aggregate.Category;
 import bst.bobsoolting.post.command.domain.aggregate.Post;
+import org.springframework.stereotype.Component;
 
+@Component
 public class PostConverter {
 
     // DTO -> Entity 변환
-    public static Post toEntity(PostDTO dto) {
+    public Post toEntity(PostDTO dto) {
         if (dto == null) return null;
         return Post.builder()
                 .postId(dto.getPostId())
@@ -28,7 +30,7 @@ public class PostConverter {
     }
 
     // Entity -> DTO 변환
-    public static PostDTO toDTO(Post post) {
+    public PostDTO toDTO(Post post) {
         if (post == null) return null;
         return PostDTO.builder()
                 .postId(post.getPostId())
