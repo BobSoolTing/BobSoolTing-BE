@@ -37,7 +37,7 @@ public class PostCommandController {
     /**
      * 게시글 삭제 (소프트 딜리트)
      */
-    @DeleteMapping("/{postId}")
+    @PatchMapping("/{postId}")
     public ResponseEntity<Void> softDeletePost(@PathVariable("postId") Long postId) {
         postCommandService.deletePost(postId);
         return ResponseEntity.noContent().build();

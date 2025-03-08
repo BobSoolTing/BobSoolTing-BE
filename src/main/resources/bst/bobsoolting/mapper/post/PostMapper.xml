@@ -33,13 +33,4 @@
 <!--  작성자(memberId)별 조회 쿼리  -->
 <select id="findByMemberId" resultMap="PostResultMap" parameterType="java.lang.String"> SELECT * FROM post WHERE member_id = #{memberId} AND post_status = true </select>
 
-<!--  게시글 등록  -->
-<insert id="createPost" parameterType="bst.bobsoolting.post.command.domain.aggregate.Post">
-INSERT INTO post ( category, title, content, images, max_participants, participants, recruitment_status, date, location, post_status, created_at, updated_at, member_id ) VALUES ( #{category}, #{title}, #{content}, #{images}, #{maxParticipants}, #{participants}, #{recruitmentStatus}, #{date}, #{location}, #{postStatus}, #{createdAt}, #{updatedAt}, #{memberId} )
-<selectKey keyProperty="postId" resultType="long" order="AFTER"> SELECT LAST_INSERT_ID() </selectKey>
-</insert>
-<!--  게시글 수정  -->
-<update id="updatePost" parameterType="bst.bobsoolting.post.command.domain.aggregate.Post"> UPDATE post SET category = #{category}, title = #{title}, content = #{content}, images = #{images}, max_participants = #{maxParticipants}, participants = #{participants}, recruitment_status = #{recruitmentStatus}, date = #{date}, location = #{location}, post_status = #{postStatus}, updated_at = #{updatedAt} WHERE post_id = #{postId} </update>
-<!--  게시글 삭제 (소프트 딜리트)  -->
-<update id="softDeletePost" parameterType="long"> UPDATE post SET post_status = false, updated_at = NOW() WHERE post_id = #{postId} </update>
 </mapper>
