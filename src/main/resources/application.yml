@@ -39,7 +39,8 @@ spring:
             client-secret: ${KAKAO_CLIENT_SECRET_KEY}
             client-name: kakao
             authorization-grant-type: authorization_code
-            redirect-uri: ${KAKAO_BASE_URL}/login/oauth2/code/kakao
+            redirect-uri: http://localhost:3000/login
+            # redirect-uri: ${KAKAO_BASE_URL}/login/oauth2/code/kakao
             scope:
               - profile_nickname
               - profile_image
