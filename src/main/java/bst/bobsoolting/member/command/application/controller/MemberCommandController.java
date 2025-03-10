@@ -28,20 +28,22 @@ public class MemberCommandController implements MemberCommandControllerDocs {
     private final MemberConverter memberConverter;
     private final SecurityUtil securityUtil;
 
-
-    @PostMapping("/basic-info")
-    public ResponseEntity<String> registerBasicInfo(@RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
-        String kakaoId = securityUtil.getKakaoIdFromToken(token.replace("Bearer ", ""));
-        log.info("신규 회원 기본 정보 저장 요청: {}", kakaoId);
+    @PostMapping("/auth/kakao")
+    public ResponseEntity<?> kakaoLogin(@RequestBody Map<String, String> request) {
+        String code = request.get("code");
+        log.info("카카오 로그인 요청. 인가 코드: {}", code);
         try {
-            memberCommandService.createBasicMember(kakaoId);
-            return ResponseEntity.ok("신규 회원 기본 정보 저장 완료");
+            String accessToken = memberCommandService.getKakaoAccessToken(code);
+            MemberDTO member = memberCommandService.getKakaoUserInfo(accessToken);
+            ResponseCreateMemberVO response = memberConverter.fromEntityToCreateVO(member);
+
+            return ResponseEntity.ok(response);
         } catch (CommonException e) {
-            log.error("회원 기본 정보 저장 오류: {}", e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage());
+            log.error("카카오 로그인 오류: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
             log.error("예상치 못한 오류 발생", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("회원 기본 정보 저장 중 오류 발생");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("카카오 로그인 처리 중 오류 발생");
         }
     }
 
@@ -69,24 +71,5 @@ public class MemberCommandController implements MemberCommandControllerDocs {
         MemberDTO updatedMember = memberCommandService.updateMemberProfile(kakaoId, updateInfo);
         ResponseProfileVO responseProfileVO = memberConverter.fromEntityToProfileVO(updatedMember);
         return ResponseEntity.ok(responseProfileVO);
-    }
-
-    @PostMapping("/auth/kakao")
-    public ResponseEntity<?> kakaoLogin(@RequestBody Map<String, String> request) {
-        String code = request.get("code");
-        log.info("카카오 로그인 요청. 인가 코드: {}", code);
-        try {
-            String accessToken = memberCommandService.getKakaoAccessToken(code);
-            MemberDTO member = memberCommandService.getKakaoUserInfo(accessToken);
-            ResponseCreateMemberVO response = memberConverter.fromEntityToCreateVO(member);
-
-            return ResponseEntity.ok(response);
-        } catch (CommonException e) {
-            log.error("카카오 로그인 오류: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        } catch (Exception e) {
-            log.error("예상치 못한 오류 발생", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("카카오 로그인 처리 중 오류 발생");
-        }
     }
 }

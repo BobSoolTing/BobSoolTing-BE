@@ -15,7 +15,6 @@ import bst.bobsoolting.member.query.repository.MemberMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
@@ -25,10 +24,10 @@ import org.springframework.web.client.RestTemplate;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-
-import java.util.Map;
 import java.util.Date;
+import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 @Slf4j
 @Service
@@ -42,43 +41,20 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
     @Override
     @Transactional
-    public MemberDTO createMember(MemberDTO newMemberDTO) {
-        try {
-            String memberId = generateMemberId();
-            log.info("생성된 memberId: {}", memberId);
-
-            Member newMember = memberConverter.fromDTOToEntity(newMemberDTO, memberId);
-
-            memberRepository.save(newMember);
-            log.info("회원가입 완료: kakaoId={}, memberId={}", newMember.getKakaoId(), newMember.getMemberId());
-            return memberConverter.fromEntityToDTO(newMember);
-        } catch (Exception e) {
-            log.error("회원가입 실패: {}", e.getMessage(), e);
-            throw new CommonException(ErrorCode.INTERNAL_SERVER_ERROR);
-
-    public void createBasicMember(String kakaoId) {
-        log.info("신규 회원 기본 정보 저장 진행. kakaoId={}", kakaoId);
-
-        Member existingMember = memberMapper.findByKakaoId(kakaoId);
-        if (existingMember != null) {
-            log.warn("이미 존재하는 회원입니다. kakaoId={}", kakaoId);
-            throw new CommonException(ErrorCode.ALREADY_EXISTS);
-
-        }
-        Member newMember = createMember(kakaoId);
-        memberRepository.save(newMember);
-        log.info("신규 회원 기본 정보 저장 완료. kakaoId={}", kakaoId);
-    }
-
-    @Override
-    @Transactional
     public MemberDTO updateMemberAdditionalInfo(String kakaoId, RequestAdditionalRegisterVO info) {
         log.info("추가 회원가입 정보 업데이트 진행. kakaoId={}, 추가 정보={}", kakaoId, info);
 
         Member existingMember = memberMapper.findByKakaoId(kakaoId);
         if (existingMember == null) throw new CommonException(ErrorCode.NOT_FOUND_MEMBER);
 
-        updateMemberAdditionalInfo(info, existingMember);
+        validateInput(info);
+
+        existingMember.setUniversity(info.getUniversity());
+        existingMember.setDepartment(info.getDepartment());
+        existingMember.setStudentNumber(info.getStudentNumber());
+        existingMember.setPhone(info.getPhone());
+        existingMember.setGender(info.getGender());
+        existingMember.setBirth(info.getBirth());
 
         memberRepository.save(existingMember);
         log.info("추가 정보 업데이트 완료. kakaoId={}", kakaoId);
@@ -94,21 +70,15 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         Member member = memberMapper.findByKakaoId(kakaoId);
         if (member == null) throw new CommonException(ErrorCode.NOT_FOUND_MEMBER);
 
-        boolean isUpdated = false;
         if (updateInfo.getProfileImage() != null) {
             member.setProfileImage(updateInfo.getProfileImage());
-            isUpdated = true;
         }
         if (updateInfo.getNickname() != null) {
             member.setNickname(updateInfo.getNickname());
-            isUpdated = true;
         }
         if (updateInfo.getDepartment() != null) {
             member.setDepartment(updateInfo.getDepartment());
-            isUpdated = true;
         }
-
-        if (!isUpdated) return memberConverter.fromEntityToDTO(member);
 
         memberRepository.save(member);
         log.info("프로필 수정 완료. kakaoId={}, 수정된 정보={}", kakaoId, updateInfo);
@@ -175,7 +145,6 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     }
 
     @Override
-    @Transactional
     public MemberDTO createOrUpdateMember(String kakaoId, String nickname) {
         Member existingMember = memberMapper.findByKakaoId(kakaoId);
 
@@ -205,9 +174,10 @@ public class MemberCommandServiceImpl implements MemberCommandService {
             log.info("기존 회원 정보 업데이트: kakaoId={}, memberId={}", kakaoId, existingMember.getMemberId());
             return memberConverter.fromEntityToDTO(existingMember);
         }
+    }
 
     private Member createMember(String kakaoId) {
-        Member newMember = Member.builder()
+        return Member.builder()
                 .memberId(generateMemberId())
                 .kakaoId(kakaoId)
                 .nickname("신규 유저")
@@ -223,22 +193,30 @@ public class MemberCommandServiceImpl implements MemberCommandService {
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
-        return newMember;
-
     }
 
     private String generateMemberId() {
         return LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")) + UUID.randomUUID().toString().replace("-", "").substring(20);
     }
 
-    private void updateMemberAdditionalInfo(RequestAdditionalRegisterVO info, Member existingMember) {
-        if (info.getNickname() != null) existingMember.setNickname(info.getNickname());
-        if (info.getPhone() != null) existingMember.setPhone(info.getPhone());
-        if (info.getProfileImage() != null) existingMember.setProfileImage(info.getProfileImage());
-        if (info.getGender() != null) existingMember.setGender(info.getGender());
-        if (info.getBirth() != null) existingMember.setBirth(info.getBirth());
-        if (info.getUniversity() != null) existingMember.setUniversity(info.getUniversity());
-        if (info.getDepartment() != null) existingMember.setDepartment(info.getDepartment());
-        if (info.getStudentNumber() != null) existingMember.setStudentNumber(info.getStudentNumber());
+    private void validateInput(RequestAdditionalRegisterVO info) {
+        if (!Pattern.matches("^[a-zA-Z0-9가-힣]{2,8}$", info.getNickname())) {
+            throw new CommonException(ErrorCode.INVALID_INPUT_VALUE);
+        }
+        if (!Pattern.matches("^[a-zA-Z0-9가-힣]{4,16}$", info.getUniversity())) {
+            throw new CommonException(ErrorCode.INVALID_INPUT_VALUE);
+        }
+        if (!Pattern.matches("^[a-zA-Z0-9가-힣]{4,16}$", info.getDepartment())) {
+            throw new CommonException(ErrorCode.INVALID_INPUT_VALUE);
+        }
+        if (!Pattern.matches("^\\d{6,10}$", String.valueOf(info.getStudentNumber()))) {
+            throw new CommonException(ErrorCode.INVALID_INPUT_VALUE);
+        }
+        if (!Pattern.matches("^(010-\\d{4}-\\d{4})$", info.getPhone())) {
+            throw new CommonException(ErrorCode.INVALID_INPUT_VALUE);
+        }
+        if (!info.getGender().name().matches("MAN|WOMAN")) {
+            throw new CommonException(ErrorCode.INVALID_INPUT_VALUE);
+        }
     }
 }
