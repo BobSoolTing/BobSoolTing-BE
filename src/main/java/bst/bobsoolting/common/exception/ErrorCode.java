@@ -18,6 +18,8 @@ public enum ErrorCode {
     INVALID_REQUEST_BODY(40006, HttpStatus.BAD_REQUEST, "잘못된 요청 본문입니다."), // 요청 본문에 유효하지 않은 데이터가 포함된 경우
     MISSING_REQUIRED_FIELD(40007, HttpStatus.BAD_REQUEST, "필수 필드가 누락되었습니다."), // JSON 또는 요청 데이터에서 필수 필드가 누락된 경우
     EMPTY_REQUEST_INPUTSTREAM(40008, HttpStatus.BAD_REQUEST, "요청 본문이 비어 있습니다. 필수 데이터를 포함해야 합니다."),
+    ALREADY_LIKED(40009, HttpStatus.BAD_REQUEST, "이미 좋아요 누른 게시글입니다."),
+    ALREADY_EXISTS(40010, HttpStatus.BAD_REQUEST, "이미 등록된 유저입니다."),
 
     // 401: 인증 실패 (Unauthorized)
     INVALID_HEADER_VALUE(40100, HttpStatus.UNAUTHORIZED, "올바르지 않은 헤더값입니다."), // 헤더 값이 잘못되었거나 누락된 경우
