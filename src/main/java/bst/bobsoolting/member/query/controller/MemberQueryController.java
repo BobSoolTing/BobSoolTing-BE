@@ -39,7 +39,7 @@ public class MemberQueryController implements MemberQueryControllerDocs {
         }
         log.info("✅ JWT 기반 로그인 성공: {}", kakaoId);
 
-        String token = jwtTokenProvider.generateToken(kakaoId);
+        String token = jwtTokenProvider.generateAccessToken(kakaoId);
         log.info("✅ 발급된 JWT: {}", token);
 
         Map<String, String> response = new HashMap<>();
