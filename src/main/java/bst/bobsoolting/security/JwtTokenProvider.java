@@ -34,7 +34,6 @@ public class JwtTokenProvider {
         return generateToken(kakaoId, accessTokenValidityInMilliseconds);
     }
 
-    // ✅ Refresh Token 생성
     public String generateRefreshToken(String kakaoId) {
         return generateToken(kakaoId, refreshTokenValidityInMilliseconds);
     }

@@ -5,8 +5,6 @@ import bst.bobsoolting.common.exception.ErrorCode;
 import bst.bobsoolting.config.KakaoProperties;
 import bst.bobsoolting.member.command.application.dto.MemberDTO;
 import bst.bobsoolting.member.command.application.mapper.MemberConverter;
-import bst.bobsoolting.member.command.domain.aggregate.MemberGender;
-import bst.bobsoolting.member.command.domain.aggregate.MemberRole;
 import bst.bobsoolting.member.command.domain.aggregate.entity.Member;
 import bst.bobsoolting.member.command.domain.repository.MemberRepository;
 import bst.bobsoolting.member.command.domain.vo.request.RequestAdditionalRegisterVO;
@@ -14,6 +12,8 @@ import bst.bobsoolting.member.command.domain.vo.request.RequestUpdateProfileVO;
 import bst.bobsoolting.member.query.repository.MemberMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,11 +22,10 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 @Slf4j
@@ -38,6 +37,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     private final MemberMapper memberMapper;
     private final MemberConverter memberConverter;
     private final KakaoProperties kakaoProperties;
+    private final StringRedisTemplate redisTemplate;
 
     @Override
     @Transactional
@@ -60,6 +60,16 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         log.info("추가 정보 업데이트 완료. kakaoId={}", kakaoId);
 
         return memberConverter.fromEntityToDTO(existingMember);
+    }
+
+    @Override
+    public void storeRefreshToken(String kakaoId, String refreshToken) {
+        ValueOperations<String, String> ops = redisTemplate.opsForValue();
+
+        String key = "refresh_token:" + kakaoId;
+        ops.set(key, refreshToken, 7, TimeUnit.DAYS);
+
+        log.info("✅ Refresh Token 저장 완료 - Kakao ID: {}, Token: {}", kakaoId, refreshToken);
     }
 
     @Override
@@ -176,23 +186,10 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         }
     }
 
-    private Member createMember(String kakaoId) {
-        return Member.builder()
-                .memberId(generateMemberId())
-                .kakaoId(kakaoId)
-                .nickname("신규 유저")
-                .phone("")
-                .profileImage("")
-                .gender(MemberGender.DEFAULT)
-                .birth(new Date())
-                .university("미입력")
-                .department("미입력")
-                .studentNumber(0)
-                .rating(0.0f)
-                .memberRole(MemberRole.ROLE_USER)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
+    @Override
+    public String getRefreshToken(String kakaoId) {
+        ValueOperations<String, String> ops = redisTemplate.opsForValue();
+        return ops.get("refresh_token:" + kakaoId);
     }
 
     private String generateMemberId() {

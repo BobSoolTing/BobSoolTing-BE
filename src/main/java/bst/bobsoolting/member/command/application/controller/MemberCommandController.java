@@ -11,6 +11,7 @@ import bst.bobsoolting.member.command.domain.vo.response.ResponseCreateMemberVO;
 import bst.bobsoolting.member.command.domain.vo.response.ResponseProfileVO;
 import bst.bobsoolting.security.JwtTokenProvider;
 import bst.bobsoolting.util.SecurityUtil;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -32,43 +33,65 @@ public class MemberCommandController implements MemberCommandControllerDocs {
     private final JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/auth/kakao")
-    public ResponseEntity<?> kakaoLogin(@RequestBody Map<String, String> request) {
+    public ResponseEntity<Map<String, String>> kakaoLogin(@RequestBody Map<String, String> request) {
         String code = request.get("code");
         if (code == null || code.isEmpty()) {
-            log.error("❌ 인가 코드가 전달되지 않았습니다.");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("인가 코드가 없습니다.");
+            log.error("인가 코드가 전달되지 않았습니다.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "인가 코드가 없습니다."));
         }
+
         log.info("카카오 로그인 요청. 인가 코드: {}", code);
         try {
             String accessToken = memberCommandService.getKakaoAccessToken(code);
             MemberDTO member = memberCommandService.getKakaoUserInfo(accessToken);
+            String refreshToken = jwtTokenProvider.generateRefreshToken(member.getKakaoId());
+
             ResponseCreateMemberVO response = memberConverter.fromEntityToCreateVO(member);
-            return ResponseEntity.ok(response);
+            memberCommandService.storeRefreshToken(response.getKakaoId(), refreshToken);
+
+            Map<String, String> responseMap = new HashMap<>();
+            responseMap.put("access_token", accessToken);
+            responseMap.put("refresh_token", refreshToken);
+
+            return ResponseEntity.ok(responseMap);
         } catch (CommonException e) {
             log.error("카카오 로그인 오류: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
             log.error("예상치 못한 오류 발생", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("카카오 로그인 처리 중 오류 발생");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "카카오 로그인 처리 중 오류 발생"));
         }
     }
 
     @PostMapping("/auth/refresh")
     public ResponseEntity<?> refreshAccessToken(@RequestBody Map<String, String> request) {
         String refreshToken = request.get("refresh_token");
-        if (refreshToken == null || jwtTokenProvider.isTokenExpired(refreshToken)) {
+
+        if (refreshToken == null || refreshToken.isEmpty() || jwtTokenProvider.isTokenExpired(refreshToken)) {
+            log.warn("유효하지 않은 Refresh Token 요청 감지");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 Refresh Token입니다.");
         }
 
-        String kakaoId = jwtTokenProvider.parseToken(refreshToken).getSubject();
-        String newAccessToken = jwtTokenProvider.generateAccessToken(kakaoId);
+        Claims claims = jwtTokenProvider.parseToken(refreshToken);
+        String kakaoId = claims.getSubject();
 
+        String storedRefreshToken = memberCommandService.getRefreshToken(kakaoId);
+
+        if (storedRefreshToken == null) {
+            log.warn("Redis에서 Refresh Token Not Found - Kakao ID: {}", kakaoId);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh Token이 만료되었거나 존재하지 않습니다.");
+        }
+        if (!refreshToken.equals(storedRefreshToken)) {
+            log.warn("Refresh Token 불일치 - Kakao ID: {}", kakaoId);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh Token이 일치하지 않습니다.");
+        }
+
+        String newAccessToken = jwtTokenProvider.generateAccessToken(kakaoId);
         Map<String, String> response = new HashMap<>();
         response.put("access_token", newAccessToken);
 
         return ResponseEntity.ok(response);
     }
-
 
     @PatchMapping("/complete")
     public ResponseEntity<ResponseCreateMemberVO> completeRegistration(@RequestBody RequestAdditionalRegisterVO info, @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
