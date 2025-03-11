@@ -108,7 +108,8 @@ jobs:
                 client-id: \${KAKAO_CLIENT_KEY}
                 client-secret: \${KAKAO_CLIENT_SECRET_KEY}
                 use-basic-authentication-with-access-code-grant: true
-              oauth2RedirectUrl: \${KAKAO_BASE_URL}/login/oauth2/code/kakao
+              # oauth2RedirectUrl: \${KAKAO_BASE_URL}/login/oauth2/code/kakao
+              oauth2RedirectUrl: http://localhost:3000/login
           jwt:
             secret: \${JWT_SECRET}
             access-token-validity: 1800000 # 30분
