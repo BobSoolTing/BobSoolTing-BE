@@ -26,6 +26,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (token != null && token.startsWith("Bearer ")) {
             token = token.substring(7);
+
+            if (jwtTokenProvider.isTokenExpired(token)) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("Access Token이 만료되었습니다. Refresh Token을 사용하세요.");
+                return;
+            }
+
             Claims claims = jwtTokenProvider.parseToken(token);
             String kakaoId = claims.getSubject();
 

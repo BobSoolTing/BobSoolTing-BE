@@ -40,7 +40,7 @@ public class SecurityConfig {
 //                        .requestMatchers("/api/**/admin/**").hasAuthority("ROLE_ADMIN")
                                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**", "/v3/api-docs/swagger-config").permitAll()
 
-                                .requestMatchers("/api/member/basic-info").permitAll()
+                                .requestMatchers("/api/member/auth/kakao").permitAll()
                                 .requestMatchers("/api/member/complete").permitAll()
                                 .requestMatchers("/api/member/loginSuccess").permitAll()
                                 .requestMatchers("/api/member/loginFailure").permitAll()

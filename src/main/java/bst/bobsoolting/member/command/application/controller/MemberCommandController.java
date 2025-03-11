@@ -9,6 +9,7 @@ import bst.bobsoolting.member.command.domain.vo.request.RequestAdditionalRegiste
 import bst.bobsoolting.member.command.domain.vo.request.RequestUpdateProfileVO;
 import bst.bobsoolting.member.command.domain.vo.response.ResponseCreateMemberVO;
 import bst.bobsoolting.member.command.domain.vo.response.ResponseProfileVO;
+import bst.bobsoolting.security.JwtTokenProvider;
 import bst.bobsoolting.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -27,6 +29,7 @@ public class MemberCommandController implements MemberCommandControllerDocs {
     private final MemberCommandService memberCommandService;
     private final MemberConverter memberConverter;
     private final SecurityUtil securityUtil;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/auth/kakao")
     public ResponseEntity<?> kakaoLogin(@RequestBody Map<String, String> request) {
@@ -46,6 +49,23 @@ public class MemberCommandController implements MemberCommandControllerDocs {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("카카오 로그인 처리 중 오류 발생");
         }
     }
+
+    @PostMapping("/auth/refresh")
+    public ResponseEntity<?> refreshAccessToken(@RequestBody Map<String, String> request) {
+        String refreshToken = request.get("refresh_token");
+        if (refreshToken == null || jwtTokenProvider.isTokenExpired(refreshToken)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 Refresh Token입니다.");
+        }
+
+        String kakaoId = jwtTokenProvider.parseToken(refreshToken).getSubject();
+        String newAccessToken = jwtTokenProvider.generateAccessToken(kakaoId);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("access_token", newAccessToken);
+
+        return ResponseEntity.ok(response);
+    }
+
 
     @PatchMapping("/complete")
     public ResponseEntity<ResponseCreateMemberVO> completeRegistration(@RequestBody RequestAdditionalRegisterVO info, @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
