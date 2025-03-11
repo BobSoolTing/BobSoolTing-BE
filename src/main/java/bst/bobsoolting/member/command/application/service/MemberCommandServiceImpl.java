@@ -5,6 +5,8 @@ import bst.bobsoolting.common.exception.ErrorCode;
 import bst.bobsoolting.config.KakaoProperties;
 import bst.bobsoolting.member.command.application.dto.MemberDTO;
 import bst.bobsoolting.member.command.application.mapper.MemberConverter;
+import bst.bobsoolting.member.command.domain.aggregate.MemberGender;
+import bst.bobsoolting.member.command.domain.aggregate.MemberRole;
 import bst.bobsoolting.member.command.domain.aggregate.entity.Member;
 import bst.bobsoolting.member.command.domain.repository.MemberRepository;
 import bst.bobsoolting.member.command.domain.vo.request.RequestAdditionalRegisterVO;
@@ -163,15 +165,15 @@ public class MemberCommandServiceImpl implements MemberCommandService {
             Member newMember = Member.builder()
                     .memberId(memberId)
                     .kakaoId(kakaoId)
-                    .nickname(nickname)
+                    .nickname(null)
                     .profileImage(null)
-                    .gender(null)
+                    .gender(MemberGender.DEFAULT)
                     .birth(null)
                     .university(null)
                     .department(null)
-                    .studentNumber(0)
+                    .studentNumber(null)
                     .rating(0.0f)
-                    .memberRole(null)
+                    .memberRole(MemberRole.ROLE_USER)
                     .build();
 
             memberRepository.save(newMember);
