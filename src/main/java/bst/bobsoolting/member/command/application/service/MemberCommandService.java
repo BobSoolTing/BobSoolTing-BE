@@ -15,7 +15,7 @@ public interface MemberCommandService {
     MemberDTO getKakaoUserInfo(String accessToken);
 
     @Transactional
-    MemberDTO createOrUpdateMember(String kakaoId, String nickname);
+    MemberDTO createOrUpdateMember(String kakaoId);
 
     MemberDTO updateMemberAdditionalInfo(String kakaoId, RequestAdditionalRegisterVO info);
 
