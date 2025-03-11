@@ -148,16 +148,14 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         }
 
         Map<String, Object> responseBody = response.getBody();
-        Map<String, Object> kakaoAccount = (Map<String, Object>) responseBody.get("kakao_account");
 
         String kakaoId = String.valueOf(responseBody.get("id"));
-        String nickname = (String) ((Map<String, Object>) kakaoAccount.get("profile")).get("nickname");
 
-        return createOrUpdateMember(kakaoId, nickname);
+        return createOrUpdateMember(kakaoId);
     }
 
     @Override
-    public MemberDTO createOrUpdateMember(String kakaoId, String nickname) {
+    public MemberDTO createOrUpdateMember(String kakaoId) {
         Member existingMember = memberMapper.findByKakaoId(kakaoId);
 
         if (existingMember == null) {
@@ -180,8 +178,6 @@ public class MemberCommandServiceImpl implements MemberCommandService {
             log.info("신규 회원 생성: kakaoId={}, memberId={}", kakaoId, memberId);
             return memberConverter.fromEntityToDTO(newMember);
         } else {
-            existingMember.setNickname(nickname);
-
             memberRepository.save(existingMember);
             log.info("기존 회원 정보 업데이트: kakaoId={}, memberId={}", kakaoId, existingMember.getMemberId());
             return memberConverter.fromEntityToDTO(existingMember);
