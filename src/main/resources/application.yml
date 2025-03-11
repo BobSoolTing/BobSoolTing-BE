@@ -79,7 +79,8 @@ springdoc:
       client-id: ${KAKAO_CLIENT_KEY}
       client-secret: ${KAKAO_CLIENT_SECRET_KEY}
       use-basic-authentication-with-access-code-grant: true
-    oauth2RedirectUrl: ${KAKAO_BASE_URL}/login/oauth2/code/kakao
+    oauth2RedirectUrl: http://localhost:3000/login
+    # oauth2RedirectUrl: ${KAKAO_BASE_URL}/login/oauth2/code/kakao
 
 jwt:
   secret: ${JWT_SECRET}

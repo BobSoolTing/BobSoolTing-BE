@@ -34,12 +34,15 @@ public class MemberCommandController implements MemberCommandControllerDocs {
     @PostMapping("/auth/kakao")
     public ResponseEntity<?> kakaoLogin(@RequestBody Map<String, String> request) {
         String code = request.get("code");
+        if (code == null || code.isEmpty()) {
+            log.error("❌ 인가 코드가 전달되지 않았습니다.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("인가 코드가 없습니다.");
+        }
         log.info("카카오 로그인 요청. 인가 코드: {}", code);
         try {
             String accessToken = memberCommandService.getKakaoAccessToken(code);
             MemberDTO member = memberCommandService.getKakaoUserInfo(accessToken);
             ResponseCreateMemberVO response = memberConverter.fromEntityToCreateVO(member);
-
             return ResponseEntity.ok(response);
         } catch (CommonException e) {
             log.error("카카오 로그인 오류: {}", e.getMessage());
