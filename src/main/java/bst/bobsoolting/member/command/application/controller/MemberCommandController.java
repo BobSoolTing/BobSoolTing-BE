@@ -6,6 +6,8 @@ import bst.bobsoolting.member.command.application.dto.MemberDTO;
 import bst.bobsoolting.member.command.application.mapper.MemberConverter;
 import bst.bobsoolting.member.command.application.service.MemberCommandService;
 import bst.bobsoolting.member.command.domain.vo.request.RequestAdditionalRegisterVO;
+import bst.bobsoolting.member.command.domain.vo.request.RequestKakaoAuthVO;
+import bst.bobsoolting.member.command.domain.vo.request.RequestRefreshTokenVO;
 import bst.bobsoolting.member.command.domain.vo.request.RequestUpdateProfileVO;
 import bst.bobsoolting.member.command.domain.vo.response.ResponseCreateMemberVO;
 import bst.bobsoolting.member.command.domain.vo.response.ResponseProfileVO;
@@ -33,8 +35,8 @@ public class MemberCommandController implements MemberCommandControllerDocs {
     private final JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/auth/kakao")
-    public ResponseEntity<Map<String, String>> kakaoLogin(@RequestBody Map<String, String> request) {
-        String code = request.get("code");
+    public ResponseEntity<Map<String, String>> kakaoLogin(@RequestBody RequestKakaoAuthVO request) {
+        String code = request.getCode();
         if (code == null || code.isEmpty()) {
             log.error("인가 코드가 전달되지 않았습니다.");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "인가 코드가 없습니다."));
@@ -42,15 +44,16 @@ public class MemberCommandController implements MemberCommandControllerDocs {
 
         log.info("카카오 로그인 요청. 인가 코드: {}", code);
         try {
-            String accessToken = memberCommandService.getKakaoAccessToken(code);
-            MemberDTO member = memberCommandService.getKakaoUserInfo(accessToken);
+            String kakaoAccessToken = memberCommandService.getKakaoAccessToken(code);
+            MemberDTO member = memberCommandService.getKakaoUserInfo(kakaoAccessToken);
+
+            String serverJwtToken = jwtTokenProvider.generateAccessToken(member.getKakaoId());
             String refreshToken = jwtTokenProvider.generateRefreshToken(member.getKakaoId());
 
-            ResponseCreateMemberVO response = memberConverter.fromEntityToCreateVO(member);
-            memberCommandService.storeRefreshToken(response.getKakaoId(), refreshToken);
+            memberCommandService.storeRefreshToken(member.getKakaoId(), refreshToken);
 
             Map<String, String> responseMap = new HashMap<>();
-            responseMap.put("access_token", accessToken);
+            responseMap.put("access_token", serverJwtToken);
             responseMap.put("refresh_token", refreshToken);
 
             return ResponseEntity.ok(responseMap);
@@ -64,8 +67,8 @@ public class MemberCommandController implements MemberCommandControllerDocs {
     }
 
     @PostMapping("/auth/refresh")
-    public ResponseEntity<?> refreshAccessToken(@RequestBody Map<String, String> request) {
-        String refreshToken = request.get("refresh_token");
+    public ResponseEntity<?> refreshAccessToken(@RequestBody RequestRefreshTokenVO request) {
+        String refreshToken = request.getRefresh_token();
 
         if (refreshToken == null || refreshToken.isEmpty() || jwtTokenProvider.isTokenExpired(refreshToken)) {
             log.warn("유효하지 않은 Refresh Token 요청 감지");

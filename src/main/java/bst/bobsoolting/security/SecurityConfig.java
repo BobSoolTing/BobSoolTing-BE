@@ -41,14 +41,14 @@ public class SecurityConfig {
                                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**", "/v3/api-docs/swagger-config").permitAll()
 
                                 .requestMatchers("/api/member/auth/kakao").permitAll()
-                                .requestMatchers("/api/member/complete").permitAll()
+                                .requestMatchers("/api/member/complete").authenticated()
                                 .requestMatchers("/api/member/loginSuccess").permitAll()
                                 .requestMatchers("/api/member/loginFailure").permitAll()
                                 .requestMatchers("/api/member/**").authenticated()
-                                .requestMatchers("/api/comment/**").authenticated()
-                                .requestMatchers("/api/post/**").authenticated()
-                                .requestMatchers("/api/reply/**").authenticated()
-                                .requestMatchers("/api/like/**").authenticated()
+                                .requestMatchers("/api/comment", "/api/comment/**").authenticated()
+                                .requestMatchers("/api/post", "/api/post/**").authenticated()
+                                .requestMatchers("/api/reply", "/api/reply/**").authenticated()
+                                .requestMatchers("/api/like", "/api/like/**").authenticated()
 
                                 .requestMatchers("/", "/health").permitAll()
 

@@ -123,6 +123,8 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         }
 
         String accessToken = (String) response.getBody().get("access_token");
+        log.info("✅ 카카오에서 받은 Access Token: {}", accessToken);  // <--- 로그 추가!
+
         if (accessToken == null) {
             throw new CommonException(ErrorCode.INVALID_REQUEST_BODY);
         }
@@ -143,13 +145,14 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         HttpEntity<String> request = new HttpEntity<>(headers);
         ResponseEntity<Map> response = restTemplate.exchange(userInfoUrl, HttpMethod.GET, request, Map.class);
 
-        if (response.getStatusCode() != HttpStatus.OK || response.getBody() == null) {
-            throw new CommonException(ErrorCode.INTERNAL_SERVER_ERROR);
-        }
+        if (response.getStatusCode() != HttpStatus.OK || response.getBody() == null) throw new CommonException(ErrorCode.INTERNAL_SERVER_ERROR);
 
         Map<String, Object> responseBody = response.getBody();
+        log.info("✅ 카카오 사용자 정보: {}", responseBody);
 
         String kakaoId = String.valueOf(responseBody.get("id"));
+
+        if (kakaoId == null) throw new CommonException(ErrorCode.INVALID_REQUEST_BODY);
 
         return createOrUpdateMember(kakaoId);
     }
@@ -210,7 +213,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         if (!Pattern.matches("^(010-\\d{4}-\\d{4})$", info.getPhone())) {
             throw new CommonException(ErrorCode.INVALID_INPUT_VALUE);
         }
-        if (!info.getGender().name().matches("MAN|WOMAN")) {
+        if (!info.getGender().name().matches("MALE|FEMALE")) {
             throw new CommonException(ErrorCode.INVALID_INPUT_VALUE);
         }
     }

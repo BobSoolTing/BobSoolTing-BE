@@ -3,6 +3,7 @@ package bst.bobsoolting.post.command.application.dto;
 import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -15,9 +16,9 @@ public class PostDTO {
     private String category;  // Enum을 문자열로 전달 (Converter에서 변환)
     private String title;
     private String content;
-    private String images;
+    private List<String> images;
     private Integer maxParticipants;
-    private String participants;
+    private List<String> participants;
     private String recruitmentStatus;
     private LocalDate date;
     private String location;

@@ -31,38 +31,50 @@ public class JwtTokenProvider {
     }
 
     public String generateAccessToken(String kakaoId) {
-        return generateToken(kakaoId, accessTokenValidityInMilliseconds);
+        return generateJwtToken(kakaoId, accessTokenValidityInMilliseconds);
     }
 
     public String generateRefreshToken(String kakaoId) {
-        return generateToken(kakaoId, refreshTokenValidityInMilliseconds);
+        return generateJwtToken(kakaoId, refreshTokenValidityInMilliseconds);
     }
 
-    private String generateToken(String kakaoId, long validityPeriod) {
+    private String generateJwtToken(String kakaoId, long validity) {
         Date now = new Date();
-        Date validity = new Date(now.getTime() + validityPeriod);
+        Date expiration = new Date(now.getTime() + validity);
 
         return Jwts.builder()
                 .setSubject(kakaoId)
                 .setIssuedAt(now)
-                .setExpiration(validity)
+                .setExpiration(expiration)
                 .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }
 
+
     public Claims parseToken(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(secretKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(secretKey)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+            log.info("✅ JWT 파싱 성공 - Claims: {}", claims);
+            return claims;
+        } catch (Exception e) {
+            log.error("❌ JWT 파싱 오류 - 토큰: {}, 이유: {}", token, e.getMessage());
+            throw e;
+        }
     }
 
     public boolean isTokenExpired(String token) {
         try {
             Claims claims = parseToken(token);
-            return claims.getExpiration().before(new Date());
+            boolean expired = claims.getExpiration().before(new Date());
+            log.info("✅ JWT 만료 체크 - Expiration: {}, 현재 시간: {}, 만료 여부: {}",
+                    claims.getExpiration(), new Date(), expired);
+            return expired;
         } catch (Exception e) {
+            log.error("❌ JWT 파싱 실패 - 이유: {}", e.getMessage());
             return true;
         }
     }

@@ -1,47 +1,54 @@
 package bst.bobsoolting.post.command.application.controller;
 
+import bst.bobsoolting.member.query.service.MemberQueryService;
+import bst.bobsoolting.post.command.application.controller.docs.PostCommandControllerDocs;
 import bst.bobsoolting.post.command.application.dto.PostDTO;
 import bst.bobsoolting.post.command.application.service.PostCommandService;
-import bst.bobsoolting.post.command.vo.request.RequestUpdatePostVO;
+import bst.bobsoolting.post.command.domain.vo.request.RequestCreatePostVO;
+import bst.bobsoolting.post.command.domain.vo.request.RequestUpdatePostVO;
+import bst.bobsoolting.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.http.HttpHeaders;
+
 @RestController
-@RequestMapping("/api/post/command")
 @RequiredArgsConstructor
-public class PostCommandController {
+public class PostCommandController implements PostCommandControllerDocs {
 
     private final PostCommandService postCommandService;
+    private final MemberQueryService memberQueryService;
+    private final SecurityUtil securityUtil;
 
-    /**
-     * 게시글 생성
-     */
-    @PostMapping("/")
-    public ResponseEntity<PostDTO> createPost(@RequestBody PostDTO postDTO) {
-        PostDTO created = postCommandService.createPost(postDTO);
+    @PostMapping
+    public ResponseEntity<PostDTO> createPost(@RequestHeader(HttpHeaders.AUTHORIZATION) String token, @RequestBody RequestCreatePostVO request) {
+        String kakaoId = securityUtil.getKakaoIdFromToken(token.replace("Bearer ", ""));
+        String memberId = memberQueryService.getMemberIdByKakaoId(kakaoId);
+        if (memberId == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+
+        PostDTO created = postCommandService.createPost(request, memberId);
         return ResponseEntity.ok(created);
     }
 
-    /**
-     * 게시글 수정
-     */
     @PutMapping("/{postId}")
-    public ResponseEntity<PostDTO> updatePost(@PathVariable Long postId,
-                                              @RequestBody RequestUpdatePostVO postDTO) {
-        postDTO.setPostId(postId);
-        PostDTO updated = postCommandService.updatePost(postDTO);
+    public ResponseEntity<PostDTO> updatePost(@RequestHeader(HttpHeaders.AUTHORIZATION) String token, @PathVariable Long postId, @RequestBody RequestUpdatePostVO request) {
+        String kakaoId = securityUtil.getKakaoIdFromToken(token.replace("Bearer ", ""));
+        String memberId = memberQueryService.getMemberIdByKakaoId(kakaoId);
+        if (memberId == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+
+        PostDTO updated = postCommandService.updatePost(memberId, postId, request);
         return ResponseEntity.ok(updated);
     }
 
-    /**
-     * 게시글 삭제 (소프트 딜리트)
-     */
     @PatchMapping("/{postId}")
-    public ResponseEntity<Void> softDeletePost(@PathVariable("postId") Long postId) {
-        postCommandService.deletePost(postId);
+    public ResponseEntity<Void> softDeletePost(@RequestHeader(HttpHeaders.AUTHORIZATION) String token, @PathVariable("postId") Long postId) {
+        String kakaoId = securityUtil.getKakaoIdFromToken(token.replace("Bearer ", ""));
+        String memberId = memberQueryService.getMemberIdByKakaoId(kakaoId);
+        if (memberId == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        postCommandService.deletePost(memberId, postId);
+
         return ResponseEntity.noContent().build();
     }
-
 }
-

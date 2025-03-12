@@ -2,7 +2,7 @@ package bst.bobsoolting.post.query.service;
 
 import bst.bobsoolting.post.command.application.mapper.PostConverter;
 import bst.bobsoolting.post.command.application.dto.PostDTO;
-import bst.bobsoolting.post.command.domain.aggregate.Post;
+import bst.bobsoolting.post.command.domain.aggregate.entity.Post;
 import bst.bobsoolting.post.query.repository.PostMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -46,7 +46,7 @@ public class PostQueryServiceImpl implements PostQueryService {
                 .map(postConverter::toDTO)
                 .collect(Collectors.toList());
     }
-    
+
     @Override
     public List<PostDTO> getPostsByMemberId(String memberId) {
         List<Post> posts = postmapper.findByMemberId(memberId);

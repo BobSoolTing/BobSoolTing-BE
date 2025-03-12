@@ -2,30 +2,32 @@ package bst.bobsoolting.post.command.application.mapper;
 
 import bst.bobsoolting.post.command.application.dto.PostDTO;
 import bst.bobsoolting.post.command.domain.aggregate.Category;
-import bst.bobsoolting.post.command.domain.aggregate.Post;
+import bst.bobsoolting.post.command.domain.aggregate.entity.Post;
+import bst.bobsoolting.post.command.domain.vo.request.RequestCreatePostVO;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
 
 @Component
 public class PostConverter {
 
     // DTO -> Entity 변환
-    public Post toEntity(PostDTO dto) {
-        if (dto == null) return null;
+    public Post fromVOToEntity(RequestCreatePostVO request, String memberId) {
+        if (request == null) return null;
         return Post.builder()
-                .postId(dto.getPostId())
-                .category(dto.getCategory() != null ? Category.valueOf(dto.getCategory()) : null)
-                .title(dto.getTitle())
-                .content(dto.getContent())
-                .images(dto.getImages())
-                .maxParticipants(dto.getMaxParticipants())
-                .participants(dto.getParticipants())
-                .recruitmentStatus(dto.getRecruitmentStatus())
-                .date(dto.getDate())
-                .location(dto.getLocation())
-                .postStatus(dto.getPostStatus())
-                .createdAt(dto.getCreatedAt())
-                .updatedAt(dto.getUpdatedAt())
-                .memberId(dto.getMemberId())
+                .category(request.getCategory() != null ? request.getCategory() : null)
+                .title(request.getTitle())
+                .content(request.getContent())
+                .images(request.getImages())
+                .maxParticipants(request.getMaxParticipants())
+                .participants(request.getParticipants())
+                .recruitmentStatus(request.getRecruitmentStatus())
+                .date(request.getDate())
+                .location(request.getLocation())
+                .postStatus(true)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .memberId(memberId)
                 .build();
     }
 
