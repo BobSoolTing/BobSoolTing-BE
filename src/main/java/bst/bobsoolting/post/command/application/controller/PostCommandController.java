@@ -42,6 +42,16 @@ public class PostCommandController implements PostCommandControllerDocs {
         return ResponseEntity.ok(updated);
     }
 
+    @PatchMapping("/{postId}/status")
+    public ResponseEntity<Void> updateRecruitmentStatus(@RequestHeader(HttpHeaders.AUTHORIZATION) String token, @PathVariable("postId") Long postId) {
+        String kakaoId = securityUtil.getKakaoIdFromToken(token.replace("Bearer ", ""));
+        String memberId = memberQueryService.getMemberIdByKakaoId(kakaoId);
+        if (memberId == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+
+        postCommandService.updateRecruitmentStatus(memberId, postId);
+        return ResponseEntity.noContent().build();
+    }
+
     @PatchMapping("/{postId}")
     public ResponseEntity<Void> softDeletePost(@RequestHeader(HttpHeaders.AUTHORIZATION) String token, @PathVariable("postId") Long postId) {
         String kakaoId = securityUtil.getKakaoIdFromToken(token.replace("Bearer ", ""));

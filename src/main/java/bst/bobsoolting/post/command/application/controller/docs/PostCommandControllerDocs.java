@@ -24,7 +24,7 @@ public interface PostCommandControllerDocs {
             @ApiResponse(responseCode = "400", description = "잘못된 요청"),
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
-    @PostMapping("/")
+    @PostMapping
     ResponseEntity<PostDTO> createPost(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
             @RequestBody @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -46,6 +46,19 @@ public interface PostCommandControllerDocs {
             @RequestBody @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     content = @Content(schema = @Schema(implementation = RequestUpdatePostVO.class))
             ) RequestUpdatePostVO postDTO
+    );
+
+    @Operation(summary = "게시글 모집 상태 변경", description = "게시글의 모집 상태를 '모집 완료'로 변경합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "모집 상태 변경 성공"),
+            @ApiResponse(responseCode = "404", description = "해당 게시글이 존재하지 않음"),
+            @ApiResponse(responseCode = "403", description = "변경 권한 없음"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
+    })
+    @PatchMapping("/{postId}/status")
+    ResponseEntity<Void> updateRecruitmentStatus(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+            @Parameter(description = "게시글 ID", required = true) @PathVariable("postId") Long postId
     );
 
     @Operation(summary = "게시글 삭제 (소프트 삭제)", description = "게시글을 소프트 딜리트합니다. JWT에서 memberId를 자동 추출하고 본인 게시글인지 검증합니다.")

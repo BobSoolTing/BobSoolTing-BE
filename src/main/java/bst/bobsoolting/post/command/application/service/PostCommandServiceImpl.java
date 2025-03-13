@@ -1,5 +1,6 @@
 package bst.bobsoolting.post.command.application.service;
 
+import bst.bobsoolting.post.command.domain.aggregate.RecruitmentStatus;
 import bst.bobsoolting.post.command.domain.vo.request.RequestCreatePostVO;
 import lombok.extern.slf4j.Slf4j;
 import bst.bobsoolting.post.command.application.dto.PostDTO;
@@ -25,7 +26,7 @@ public class PostCommandServiceImpl implements PostCommandService {
     @Override
     @Transactional
     public PostDTO createPost(RequestCreatePostVO request, String memberId) {
-        Post post = postConverter.fromVOToEntity(request, memberId);
+        Post post = postConverter.fromCreateVOToEntity(request, memberId);
         postRepository.save(post);
 
         return postConverter.toDTO(post);
@@ -34,29 +35,27 @@ public class PostCommandServiceImpl implements PostCommandService {
     @Override
     @Transactional
     public PostDTO updatePost(String memberId, Long postId, RequestUpdatePostVO updateVO) {
+        Post existingPost = postMapper.findByPostId(postId);
+        if (existingPost == null) throw new RuntimeException("Post not found with id: " + postId);
+        if (!existingPost.getMemberId().equals(memberId)) throw new RuntimeException("You are not authorized to update this post.");
+
+        Post updatedPost = postConverter.fromUpdateVOToEntity(existingPost, updateVO);
+
+        postRepository.save(updatedPost);
+        return postConverter.toDTO(updatedPost);
+    }
+
+    @Override
+    @Transactional
+    public void updateRecruitmentStatus(String memberId, Long postId) {
         Post existing = postMapper.findByPostId(postId);
         if (existing == null) throw new RuntimeException("Post not found with id: " + postId);
         if (!existing.getMemberId().equals(memberId)) throw new RuntimeException("You are not authorized to update this post.");
 
-        Post updatedPost = Post.builder()
-                .postId(existing.getPostId())
-                .category(existing.getCategory())
-                .title(updateVO.getTitle() != null ? updateVO.getTitle() : existing.getTitle())
-                .content(updateVO.getContent() != null ? updateVO.getContent() : existing.getContent())
-                .images(updateVO.getImages() != null ? updateVO.getImages() : existing.getImages())
-                .maxParticipants(updateVO.getMaxParticipants() != null ? updateVO.getMaxParticipants() : existing.getMaxParticipants())
-                .participants(existing.getParticipants()) // 참여자 목록은 그대로 유지
-                .recruitmentStatus(updateVO.getRecruitmentStatus() != null ? updateVO.getRecruitmentStatus() : existing.getRecruitmentStatus())
-                .date(updateVO.getDate() != null ? updateVO.getDate() : existing.getDate())
-                .location(updateVO.getLocation() != null ? updateVO.getLocation() : existing.getLocation())
-                .postStatus(existing.getPostStatus()) // 이 값은 변경하지 않는다고 가정
-                .createdAt(existing.getCreatedAt())
-                .updatedAt(LocalDateTime.now())
-                .memberId(existing.getMemberId())
-                .build();
+        existing.setRecruitmentStatus(RecruitmentStatus.CLOSED);
+        existing.setUpdatedAt(LocalDateTime.now());
 
-        postRepository.save(updatedPost);
-        return postConverter.toDTO(updatedPost);
+        postRepository.save(existing);
     }
 
     @Override
@@ -66,23 +65,9 @@ public class PostCommandServiceImpl implements PostCommandService {
         if (existing == null) throw new RuntimeException("Post not found with id: " + postId);
         if (!existing.getMemberId().equals(memberId)) throw new RuntimeException("You are not authorized to delete this post.");
 
-        Post updatedPost = Post.builder()
-                .postId(existing.getPostId())
-                .category(existing.getCategory())
-                .title(existing.getTitle())
-                .content(existing.getContent())
-                .images(existing.getImages())
-                .maxParticipants(existing.getMaxParticipants())
-                .participants(existing.getParticipants())
-                .recruitmentStatus(existing.getRecruitmentStatus())
-                .date(existing.getDate())
-                .location(existing.getLocation())
-                .postStatus(false) // 소프트 딜리트
-                .createdAt(existing.getCreatedAt())
-                .updatedAt(LocalDateTime.now())
-                .memberId(existing.getMemberId())
-                .build();
+        existing.setPostStatus(false);
+        existing.setUpdatedAt(LocalDateTime.now());
 
-        postRepository.save(updatedPost);
+        postRepository.save(existing);
     }
 }

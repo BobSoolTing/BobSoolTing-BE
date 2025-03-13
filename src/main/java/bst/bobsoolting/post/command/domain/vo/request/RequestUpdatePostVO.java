@@ -1,5 +1,6 @@
 package bst.bobsoolting.post.command.domain.vo.request;
 
+import bst.bobsoolting.post.command.domain.aggregate.RecruitmentStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
@@ -18,14 +19,11 @@ public class RequestUpdatePostVO {
 	@Schema(description = "내용", example = "수정된 내용입니다.")
 	private String content;
 
-	@Schema(description = "이미지 리스트 (JSON 형식)", example = "[\"https://example.com/new-image.jpg\"]")
-	private List<String> images;
-
 	@Schema(description = "최대 참가자 수", example = "10")
 	private Integer maxParticipants;
 
 	@Schema(description = "모집 상태", example = "CLOSED")
-	private String recruitmentStatus;
+	private RecruitmentStatus recruitmentStatus;
 
 	@Schema(description = "활동 날짜", example = "2025-04-01")
 	private LocalDate date;

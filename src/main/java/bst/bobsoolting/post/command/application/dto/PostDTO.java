@@ -1,5 +1,7 @@
 package bst.bobsoolting.post.command.application.dto;
 
+import bst.bobsoolting.post.command.domain.aggregate.Category;
+import bst.bobsoolting.post.command.domain.aggregate.RecruitmentStatus;
 import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -13,13 +15,12 @@ import java.util.List;
 @ToString
 public class PostDTO {
     private Long postId;
-    private String category;  // Enum을 문자열로 전달 (Converter에서 변환)
+    private Category category;
     private String title;
     private String content;
-    private List<String> images;
     private Integer maxParticipants;
     private List<String> participants;
-    private String recruitmentStatus;
+    private RecruitmentStatus recruitmentStatus;
     private LocalDate date;
     private String location;
     private Boolean postStatus;

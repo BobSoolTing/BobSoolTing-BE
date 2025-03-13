@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum Category {
-    BOB("BOB"),
-    SOOL("SOOL"),
-    TING("TING");
+    FOOD("FOOD"),
+    DRINK("DRINK"),
+    MEETING("MEETING");
 
     private final String value;
 

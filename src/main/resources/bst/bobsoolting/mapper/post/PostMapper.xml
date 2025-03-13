@@ -4,17 +4,14 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="bst.bobsoolting.post.query.repository.PostMapper">
-
-    <!--  Post 엔티티와 DB 컬럼 간 매핑  -->
     <resultMap id="PostResultMap" type="bst.bobsoolting.post.command.domain.aggregate.entity.Post">
         <id property="postId" column="post_id"/>
         <result property="category" column="category" javaType="bst.bobsoolting.post.command.domain.aggregate.Category" typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
         <result property="title" column="title"/>
         <result property="content" column="content"/>
-        <result property="images" column="images" javaType="java.util.List" typeHandler="bst.bobsoolting.util.JsonTypeHandler"/>
         <result property="maxParticipants" column="max_participants"/>
         <result property="participants" column="participants" javaType="java.util.List" typeHandler="bst.bobsoolting.util.JsonTypeHandler"/>
-        <result property="recruitmentStatus" column="recruitment_status"/>
+        <result property="recruitmentStatus" column="recruitment_status" javaType="bst.bobsoolting.post.command.domain.aggregate.RecruitmentStatus" typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
         <result property="date" column="date" javaType="java.time.LocalDate"/>
         <result property="location" column="location"/>
         <result property="postStatus" column="post_status"/>
@@ -23,31 +20,41 @@
         <result property="memberId" column="member_id"/>
     </resultMap>
 
-    <!--  글번호 조회  -->
     <select id="findByPostId" resultMap="PostResultMap" parameterType="long">
-        SELECT * FROM post WHERE post_id = #{postId}
+        SELECT post_id, category, title, content, max_participants, participants, recruitment_status, date, location, post_status, created_at, updated_at, member_id
+          FROM post
+         WHERE post_id = #{postId}
     </select>
 
-    <!--  전체 조회  -->
     <select id="findAll" resultMap="PostResultMap">
-        SELECT * FROM post
+        SELECT post_id, category, title, content, max_participants, participants, recruitment_status, date, location, post_status, created_at, updated_at, member_id
+          FROM post
+         WHERE post_status = true
+         ORDER BY created_at DESC
     </select>
 
-    <!-- 키워드 조회 (제목/내용) -->
     <select id="searchByKeyword" resultMap="PostResultMap" parameterType="java.lang.String">
-        SELECT * FROM post
-        WHERE (title LIKE CONCAT('%', #{keyword}, '%') OR content LIKE CONCAT('%', #{keyword}, '%'))
-          AND post_status = true
+        SELECT post_id, category, title, content, max_participants, participants, recruitment_status, date, location, post_status, created_at, updated_at, member_id
+          FROM post
+         WHERE (title LIKE CONCAT('%', #{keyword}, '%') OR content LIKE CONCAT('%', #{keyword}, '%'))
+           AND post_status = true
+         ORDER BY created_at DESC
     </select>
 
-    <!--  Category별 조회 쿼리  -->
     <select id="findByCategory" resultMap="PostResultMap" parameterType="java.lang.String">
-        SELECT * FROM post WHERE category = #{category} AND post_status = true
+        SELECT post_id, category, title, content, max_participants, participants, recruitment_status, date, location, post_status, created_at, updated_at, member_id
+          FROM post
+         WHERE category = #{category}
+           AND post_status = true
+         ORDER BY created_at DESC
     </select>
 
-    <!--  작성자(memberId)별 조회 쿼리  -->
     <select id="findByMemberId" resultMap="PostResultMap" parameterType="java.lang.String">
-        SELECT * FROM post WHERE member_id = #{memberId} AND post_status = true
+        SELECT post_id, category, title, content, max_participants, participants, recruitment_status, date, location, post_status, created_at, updated_at, member_id
+          FROM post
+         WHERE member_id = #{memberId}
+           AND post_status = true
+         ORDER BY created_at DESC
     </select>
 
 </mapper>

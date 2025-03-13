@@ -5,6 +5,8 @@ import bst.bobsoolting.post.command.application.dto.PostDTO;
 import bst.bobsoolting.post.query.controller.docs.PostQueryControllerDocs;
 import bst.bobsoolting.post.query.service.PostQueryService;
 import bst.bobsoolting.util.SecurityUtil;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,20 +30,22 @@ public class PostQueryController implements PostQueryControllerDocs {
     }
 
     @GetMapping
-    public ResponseEntity<List<PostDTO>> getAllPosts() {
+    public ResponseEntity<PageInfo<PostDTO>> getAllPosts(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int size) {
+        PageHelper.startPage(page, size);
         List<PostDTO> posts = postQueryService.getAllPosts();
-        return ResponseEntity.ok(posts);
+        return ResponseEntity.ok(new PageInfo<>(posts));
+    }
+
+    @GetMapping("/category")
+    public ResponseEntity<PageInfo<PostDTO>> getPostsByCategory(@RequestParam("category") String category, @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int size) {
+        PageHelper.startPage(page, size);
+        List<PostDTO> posts = postQueryService.getPostsByCategory(category);
+        return ResponseEntity.ok(new PageInfo<>(posts));
     }
 
     @GetMapping("/search")
     public ResponseEntity<List<PostDTO>> searchPosts(@RequestParam("keyword") String keyword) {
         List<PostDTO> posts = postQueryService.searchPostsByKeyword(keyword);
-        return ResponseEntity.ok(posts);
-    }
-
-    @GetMapping("/category")
-    public ResponseEntity<List<PostDTO>> getPostsByCategory(@RequestParam("category") String category) {
-        List<PostDTO> posts = postQueryService.getPostsByCategory(category);
         return ResponseEntity.ok(posts);
     }
 

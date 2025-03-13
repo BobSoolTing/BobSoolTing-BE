@@ -13,5 +13,8 @@ public interface PostCommandService {
     PostDTO updatePost(String memberId, Long postId, RequestUpdatePostVO updateVO);
 
     @Transactional
+    void updateRecruitmentStatus(String memberId, Long postId);
+
+    @Transactional
     void deletePost(String memberId, Long postId);
 }

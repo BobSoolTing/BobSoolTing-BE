@@ -13,35 +13,30 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PostQueryServiceImpl implements PostQueryService {
 
-    private final PostMapper postmapper;
+    private final PostMapper postMapper;
     private final PostConverter postConverter;
 
     @Override
     public PostDTO getPostById(Long postId) {
-        Post post = postmapper.findByPostId(postId);
+        Post post = postMapper.findByPostId(postId);
         return postConverter.toDTO(post);
     }
 
     @Override
     public List<PostDTO> getAllPosts() {
-        List<Post> posts = postmapper.findAll();
-        return posts.stream()
-                .map(postConverter::toDTO)
-                .collect(Collectors.toList());
+        List<Post> posts = postMapper.findAll();
+        return posts.stream().map(postConverter::toDTO).collect(Collectors.toList());
     }
-    
-    @Override
-    public List<PostDTO> searchPostsByKeyword(String keyword) {
-        List<Post> posts = postmapper.searchByKeyword(keyword);
-        return posts.stream()
-                .map(postConverter::toDTO)
-                .collect(Collectors.toList());
-    }
-    
+
     @Override
     public List<PostDTO> getPostsByCategory(String category) {
-        // postmapper에서 category를 기준으로 조회한 후 DTO로 변환
-        List<Post> posts = postmapper.findByCategory(category);
+        List<Post> posts = postMapper.findByCategory(category);
+        return posts.stream().map(postConverter::toDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<PostDTO> searchPostsByKeyword(String keyword) {
+        List<Post> posts = postMapper.searchByKeyword(keyword);
         return posts.stream()
                 .map(postConverter::toDTO)
                 .collect(Collectors.toList());
@@ -49,7 +44,7 @@ public class PostQueryServiceImpl implements PostQueryService {
 
     @Override
     public List<PostDTO> getPostsByMemberId(String memberId) {
-        List<Post> posts = postmapper.findByMemberId(memberId);
+        List<Post> posts = postMapper.findByMemberId(memberId);
         return posts.stream()
                 .map(postConverter::toDTO)
                 .collect(Collectors.toList());
