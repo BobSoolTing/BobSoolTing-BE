@@ -93,9 +93,11 @@ jobs:
           logging:
             level:
               bst.bobsoolting: DEBUG
-              org.springframework.security: TRACE
+              org.springframework.security: INFO
               org.mybatis: DEBUG
               java.sql: DEBUG
+              org.springframework.web: INFO
+              org.springframework.boot.actuate: INFO
           mybatis:
             mapper-locations: classpath:/bst/bobsoolting/mapper/**/*.xml
             configuration:
