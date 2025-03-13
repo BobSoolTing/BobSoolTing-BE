@@ -39,8 +39,8 @@ spring:
             client-secret: ${KAKAO_CLIENT_SECRET_KEY}
             client-name: kakao
             authorization-grant-type: authorization_code
-            redirect-uri: http://localhost:8080/test
-#            redirect-uri: http://localhost:3000/login
+#            redirect-uri: http://localhost:8080/test
+            redirect-uri: http://localhost:3000/login
             # redirect-uri: ${KAKAO_BASE_URL}/login/oauth2/code/kakao
             scope:
               - profile_nickname
@@ -84,8 +84,8 @@ springdoc:
       client-id: ${KAKAO_CLIENT_KEY}
       client-secret: ${KAKAO_CLIENT_SECRET_KEY}
       use-basic-authentication-with-access-code-grant: true
-#    oauth2RedirectUrl: http://localhost:3000/login
-    oauth2RedirectUrl: http://localhost:8080/test
+    oauth2RedirectUrl: http://localhost:3000/login
+#    oauth2RedirectUrl: http://localhost:8080/test
     # oauth2RedirectUrl: ${KAKAO_BASE_URL}/login/oauth2/code/kakao
 
 jwt:
