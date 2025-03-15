@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Tag(name = "게시글 조회 API", description = "게시글 조회 및 검색 관련 API")
-@RequestMapping("api/post")
+@RequestMapping("/api/post")
 public interface PostQueryControllerDocs {
 
     @Operation(summary = "게시글 단건 조회", description = "특정 ID를 가진 게시글을 조회합니다.")

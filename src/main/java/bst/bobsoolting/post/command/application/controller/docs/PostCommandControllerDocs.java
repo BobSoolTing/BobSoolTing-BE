@@ -15,7 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "게시글 API", description = "게시글 생성, 수정, 삭제 관련 API")
-@RequestMapping("api/post")
+@RequestMapping("/api/post")
 public interface PostCommandControllerDocs {
 
     @Operation(summary = "게시글 생성", description = "새로운 게시글을 생성합니다. JWT에서 memberId를 자동 추출합니다.")
