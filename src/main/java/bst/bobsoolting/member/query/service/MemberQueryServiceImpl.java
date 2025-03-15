@@ -37,4 +37,10 @@ public class MemberQueryServiceImpl implements MemberQueryService {
     public MemberDTO getMemberDetail(String kakaoId) {
         return getMemberProfile(kakaoId);
     }
+
+    @Override
+    public String getMemberIdByKakaoId(String kakaoId) {
+        Member member = memberMapper.findByKakaoId(kakaoId);
+        return (member != null) ? member.getMemberId() : null;
+    }
 }

@@ -5,7 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import bst.bobsoolting.post.command.domain.aggregate.Post;
+import bst.bobsoolting.post.command.domain.aggregate.entity.Post;
 
 @Mapper
 public interface PostMapper {

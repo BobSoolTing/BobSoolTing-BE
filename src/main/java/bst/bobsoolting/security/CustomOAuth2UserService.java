@@ -27,7 +27,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         Long kakaoId = (Long) attributes.get("id");
         log.info("✅ 카카오 로그인 성공 - ID: {}", kakaoId);
 
-        String token = jwtTokenProvider.generateToken(String.valueOf(kakaoId));
+        String token = jwtTokenProvider.generateAccessToken(String.valueOf(kakaoId));
         log.info("✅ 발급된 JWT: {}", token);
 
         return new DefaultOAuth2User(
