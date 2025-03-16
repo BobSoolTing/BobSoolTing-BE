@@ -6,6 +6,7 @@ import bst.bobsoolting.post.command.domain.aggregate.entity.Post;
 import bst.bobsoolting.post.command.domain.vo.request.RequestCreatePostVO;
 import bst.bobsoolting.post.command.domain.vo.request.RequestUpdatePostVO;
 import bst.bobsoolting.post.command.domain.vo.response.ResponseCreatePostVO;
+import bst.bobsoolting.post.command.domain.vo.response.ResponsePostVO;
 import bst.bobsoolting.post.command.domain.vo.response.ResponseUpdatePostVO;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +16,6 @@ import java.util.List;
 @Component
 public class PostConverter {
 
-    // DTO -> Entity 변환
     public Post fromCreateVOToEntity(RequestCreatePostVO request, String memberId) {
         if (request == null) return null;
 
@@ -55,7 +55,6 @@ public class PostConverter {
                 .build();
     }
 
-    // Entity -> DTO 변환
     public PostDTO toDTO(Post post) {
         if (post == null) return null;
         return PostDTO.builder()
@@ -98,6 +97,22 @@ public class PostConverter {
                 .date(updated.getDate())
                 .location(updated.getLocation())
                 .memberId(updated.getMemberId())
+                .build();
+    }
+
+    public ResponsePostVO toResponseVO(PostDTO dto) {
+        if (dto == null) return null;
+        return ResponsePostVO.builder()
+                .postId(dto.getPostId())
+                .category(dto.getCategory())
+                .title(dto.getTitle())
+                .content(dto.getContent())
+                .maxParticipants(dto.getMaxParticipants())
+                .participants(dto.getParticipants())
+                .recruitmentStatus(dto.getRecruitmentStatus())
+                .date(dto.getDate())
+                .location(dto.getLocation())
+                .memberId(dto.getMemberId())
                 .build();
     }
 }

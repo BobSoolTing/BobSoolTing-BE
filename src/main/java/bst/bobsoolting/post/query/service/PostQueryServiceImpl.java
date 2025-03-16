@@ -1,11 +1,15 @@
 package bst.bobsoolting.post.query.service;
 
+import bst.bobsoolting.common.exception.CommonException;
+import bst.bobsoolting.common.exception.ErrorCode;
 import bst.bobsoolting.post.command.application.mapper.PostConverter;
 import bst.bobsoolting.post.command.application.dto.PostDTO;
 import bst.bobsoolting.post.command.domain.aggregate.entity.Post;
 import bst.bobsoolting.post.query.repository.PostMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,6 +23,7 @@ public class PostQueryServiceImpl implements PostQueryService {
     @Override
     public PostDTO getPostById(Long postId) {
         Post post = postMapper.findByPostId(postId);
+        if (post == null || !post.getPostStatus()) throw new CommonException(ErrorCode.NOT_FOUND_POST);
         return postConverter.toDTO(post);
     }
 
@@ -36,10 +41,9 @@ public class PostQueryServiceImpl implements PostQueryService {
 
     @Override
     public List<PostDTO> searchPostsByKeyword(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) return Collections.emptyList();
         List<Post> posts = postMapper.searchByKeyword(keyword);
-        return posts.stream()
-                .map(postConverter::toDTO)
-                .collect(Collectors.toList());
+        return posts.stream().map(postConverter::toDTO).collect(Collectors.toList());
     }
 
     @Override

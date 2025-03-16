@@ -24,6 +24,7 @@
         SELECT post_id, category, title, content, max_participants, participants, recruitment_status, date, location, post_status, created_at, updated_at, member_id
           FROM post
          WHERE post_id = #{postId}
+           AND post_status = true
     </select>
 
     <select id="findAll" resultMap="PostResultMap">
