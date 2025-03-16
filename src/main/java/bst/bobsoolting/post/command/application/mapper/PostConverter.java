@@ -5,6 +5,8 @@ import bst.bobsoolting.post.command.domain.aggregate.RecruitmentStatus;
 import bst.bobsoolting.post.command.domain.aggregate.entity.Post;
 import bst.bobsoolting.post.command.domain.vo.request.RequestCreatePostVO;
 import bst.bobsoolting.post.command.domain.vo.request.RequestUpdatePostVO;
+import bst.bobsoolting.post.command.domain.vo.response.ResponseCreatePostVO;
+import bst.bobsoolting.post.command.domain.vo.response.ResponseUpdatePostVO;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -70,6 +72,32 @@ public class PostConverter {
                 .createdAt(post.getCreatedAt())
                 .updatedAt(post.getUpdatedAt())
                 .memberId(post.getMemberId())
+                .build();
+    }
+
+    public ResponseCreatePostVO fromDTOToCreateVO(PostDTO created) {
+        return ResponseCreatePostVO.builder()
+                .postId(created.getPostId())
+                .category(created.getCategory() != null ? created.getCategory() : null)
+                .title(created.getTitle())
+                .content(created.getContent())
+                .maxParticipants(created.getMaxParticipants())
+                .date(created.getDate())
+                .location(created.getLocation())
+                .memberId(created.getMemberId())
+                .build();
+    }
+
+    public ResponseUpdatePostVO fromDTOToUpdateVO(PostDTO updated) {
+        return ResponseUpdatePostVO.builder()
+                .postId(updated.getPostId())
+                .category(updated.getCategory() != null ? updated.getCategory() : null)
+                .title(updated.getTitle())
+                .content(updated.getContent())
+                .maxParticipants(updated.getMaxParticipants())
+                .date(updated.getDate())
+                .location(updated.getLocation())
+                .memberId(updated.getMemberId())
                 .build();
     }
 }

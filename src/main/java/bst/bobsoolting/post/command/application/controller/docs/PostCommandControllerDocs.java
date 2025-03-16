@@ -3,6 +3,8 @@ package bst.bobsoolting.post.command.application.controller.docs;
 import bst.bobsoolting.post.command.application.dto.PostDTO;
 import bst.bobsoolting.post.command.domain.vo.request.RequestCreatePostVO;
 import bst.bobsoolting.post.command.domain.vo.request.RequestUpdatePostVO;
+import bst.bobsoolting.post.command.domain.vo.response.ResponseCreatePostVO;
+import bst.bobsoolting.post.command.domain.vo.response.ResponseUpdatePostVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -25,7 +27,7 @@ public interface PostCommandControllerDocs {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @PostMapping
-    ResponseEntity<PostDTO> createPost(
+    ResponseEntity<ResponseCreatePostVO> createPost(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
             @RequestBody @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     content = @Content(schema = @Schema(implementation = RequestCreatePostVO.class))
@@ -40,7 +42,7 @@ public interface PostCommandControllerDocs {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @PutMapping("/{postId}")
-    ResponseEntity<PostDTO> updatePost(
+    ResponseEntity<ResponseUpdatePostVO> updatePost(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
             @Parameter(description = "게시글 ID", required = true) @PathVariable Long postId,
             @RequestBody @io.swagger.v3.oas.annotations.parameters.RequestBody(
