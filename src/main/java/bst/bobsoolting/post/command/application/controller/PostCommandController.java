@@ -17,6 +17,10 @@ import org.springframework.web.bind.annotation.*;
 
 import org.springframework.http.HttpHeaders;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequiredArgsConstructor
 public class PostCommandController implements PostCommandControllerDocs {
@@ -27,10 +31,10 @@ public class PostCommandController implements PostCommandControllerDocs {
     private final SecurityUtil securityUtil;
 
     @PostMapping
-    public ResponseEntity<ResponseCreatePostVO> createPost(@RequestHeader(HttpHeaders.AUTHORIZATION) String token, @RequestBody RequestCreatePostVO request) {
+    public ResponseEntity<?> createPost(@RequestHeader(HttpHeaders.AUTHORIZATION) String token, @RequestBody RequestCreatePostVO request) {
         String kakaoId = securityUtil.getKakaoIdFromToken(token.replace("Bearer ", ""));
         String memberId = memberQueryService.getMemberIdByKakaoId(kakaoId);
-        if (memberId == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        if (memberId == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.singletonMap("message", "Unauthorized access"));
 
         PostDTO created = postCommandService.createPost(request, memberId);
         ResponseCreatePostVO response = postConverter.fromDTOToCreateVO(created);
@@ -38,33 +42,40 @@ public class PostCommandController implements PostCommandControllerDocs {
     }
 
     @PutMapping("/{postId}")
-    public ResponseEntity<ResponseUpdatePostVO> updatePost(@RequestHeader(HttpHeaders.AUTHORIZATION) String token, @PathVariable Long postId, @RequestBody RequestUpdatePostVO request) {
+    public ResponseEntity<?> updatePost(@RequestHeader(HttpHeaders.AUTHORIZATION) String token, @PathVariable Long postId, @RequestBody RequestUpdatePostVO request) {
         String kakaoId = securityUtil.getKakaoIdFromToken(token.replace("Bearer ", ""));
         String memberId = memberQueryService.getMemberIdByKakaoId(kakaoId);
-        if (memberId == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        if (memberId == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.singletonMap("message", "Unauthorized access"));
 
         PostDTO updated = postCommandService.updatePost(memberId, postId, request);
         ResponseUpdatePostVO response = postConverter.fromDTOToUpdateVO(updated);
         return ResponseEntity.ok(response);
     }
 
-    @PatchMapping("/{postId}/status")
-    public ResponseEntity<Void> updateRecruitmentStatus(@RequestHeader(HttpHeaders.AUTHORIZATION) String token, @PathVariable("postId") Long postId) {
+    @PatchMapping("/{postId}/recruit-status")
+    public ResponseEntity<Map<String, String>> updateRecruitmentStatus(@RequestHeader(HttpHeaders.AUTHORIZATION) String token, @PathVariable("postId") Long postId) {
         String kakaoId = securityUtil.getKakaoIdFromToken(token.replace("Bearer ", ""));
         String memberId = memberQueryService.getMemberIdByKakaoId(kakaoId);
-        if (memberId == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        if (memberId == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.singletonMap("message", "Unauthorized access"));
 
         postCommandService.updateRecruitmentStatus(memberId, postId);
-        return ResponseEntity.noContent().build();
+
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "모집 상태가 변경되었습니다.");
+
+        return ResponseEntity.ok(response);
     }
 
     @PatchMapping("/{postId}")
-    public ResponseEntity<Void> softDeletePost(@RequestHeader(HttpHeaders.AUTHORIZATION) String token, @PathVariable("postId") Long postId) {
+    public ResponseEntity<Map<String, String>> softDeletePost(@RequestHeader(HttpHeaders.AUTHORIZATION) String token, @PathVariable("postId") Long postId) {
         String kakaoId = securityUtil.getKakaoIdFromToken(token.replace("Bearer ", ""));
         String memberId = memberQueryService.getMemberIdByKakaoId(kakaoId);
-        if (memberId == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        if (memberId == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.singletonMap("message", "Unauthorized access"));
         postCommandService.deletePost(memberId, postId);
 
-        return ResponseEntity.noContent().build();
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "해당 게시글이 삭제되었습니다.");
+
+        return ResponseEntity.ok(response);
     }
 }

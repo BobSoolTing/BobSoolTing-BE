@@ -1,6 +1,5 @@
 package bst.bobsoolting.post.command.application.controller.docs;
 
-import bst.bobsoolting.post.command.application.dto.PostDTO;
 import bst.bobsoolting.post.command.domain.vo.request.RequestCreatePostVO;
 import bst.bobsoolting.post.command.domain.vo.request.RequestUpdatePostVO;
 import bst.bobsoolting.post.command.domain.vo.response.ResponseCreatePostVO;
@@ -16,6 +15,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @Tag(name = "게시글 API", description = "게시글 생성, 수정, 삭제 관련 API")
 @RequestMapping("/api/post")
 public interface PostCommandControllerDocs {
@@ -27,7 +28,7 @@ public interface PostCommandControllerDocs {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @PostMapping
-    ResponseEntity<ResponseCreatePostVO> createPost(
+    ResponseEntity<?> createPost(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
             @RequestBody @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     content = @Content(schema = @Schema(implementation = RequestCreatePostVO.class))
@@ -42,7 +43,7 @@ public interface PostCommandControllerDocs {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @PutMapping("/{postId}")
-    ResponseEntity<ResponseUpdatePostVO> updatePost(
+    ResponseEntity<?> updatePost(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
             @Parameter(description = "게시글 ID", required = true) @PathVariable Long postId,
             @RequestBody @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -57,8 +58,8 @@ public interface PostCommandControllerDocs {
             @ApiResponse(responseCode = "403", description = "변경 권한 없음"),
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
-    @PatchMapping("/{postId}/status")
-    ResponseEntity<Void> updateRecruitmentStatus(
+    @PatchMapping("/{postId}/recruit- status")
+    ResponseEntity<Map<String, String>> updateRecruitmentStatus(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
             @Parameter(description = "게시글 ID", required = true) @PathVariable("postId") Long postId
     );
@@ -71,7 +72,7 @@ public interface PostCommandControllerDocs {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @PatchMapping("/{postId}")
-    ResponseEntity<Void> softDeletePost(
+    ResponseEntity<Map<String, String>> softDeletePost(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token, // ✅ Authorization 헤더 추가
             @Parameter(description = "게시글 ID", required = true) @PathVariable("postId") Long postId
     );

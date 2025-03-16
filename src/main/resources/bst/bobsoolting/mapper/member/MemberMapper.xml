@@ -14,7 +14,7 @@
         <result property="department" column="department"/>
         <result property="studentNumber" column="student_number" jdbcType="INTEGER"/>
         <result property="rating" column="rating" jdbcType="FLOAT"/>
-        <result property="memberRole" column="member_role" javaType="bst.bobsoolting.member.command.domain.aggregate.MemberRole"/>
+        <result property="memberRole" column="member_role" javaType="bst.bobsoolting.member.command.domain.aggregate.MemberRole" typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
         <result property="createdAt" column="created_at" jdbcType="TIMESTAMP"/>
         <result property="updatedAt" column="updated_at" jdbcType="TIMESTAMP"/>
     </resultMap>
