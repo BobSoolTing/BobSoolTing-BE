@@ -31,10 +31,10 @@ public class PostCommandController implements PostCommandControllerDocs {
     private final SecurityUtil securityUtil;
 
     @PostMapping
-    public ResponseEntity<ResponseCreatePostVO> createPost(@RequestHeader(HttpHeaders.AUTHORIZATION) String token, @RequestBody RequestCreatePostVO request) {
+    public ResponseEntity<?> createPost(@RequestHeader(HttpHeaders.AUTHORIZATION) String token, @RequestBody RequestCreatePostVO request) {
         String kakaoId = securityUtil.getKakaoIdFromToken(token.replace("Bearer ", ""));
         String memberId = memberQueryService.getMemberIdByKakaoId(kakaoId);
-        if (memberId == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        if (memberId == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.singletonMap("message", "Unauthorized access"));
 
         PostDTO created = postCommandService.createPost(request, memberId);
         ResponseCreatePostVO response = postConverter.fromDTOToCreateVO(created);
@@ -42,10 +42,10 @@ public class PostCommandController implements PostCommandControllerDocs {
     }
 
     @PutMapping("/{postId}")
-    public ResponseEntity<ResponseUpdatePostVO> updatePost(@RequestHeader(HttpHeaders.AUTHORIZATION) String token, @PathVariable Long postId, @RequestBody RequestUpdatePostVO request) {
+    public ResponseEntity<?> updatePost(@RequestHeader(HttpHeaders.AUTHORIZATION) String token, @PathVariable Long postId, @RequestBody RequestUpdatePostVO request) {
         String kakaoId = securityUtil.getKakaoIdFromToken(token.replace("Bearer ", ""));
         String memberId = memberQueryService.getMemberIdByKakaoId(kakaoId);
-        if (memberId == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        if (memberId == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.singletonMap("message", "Unauthorized access"));
 
         PostDTO updated = postCommandService.updatePost(memberId, postId, request);
         ResponseUpdatePostVO response = postConverter.fromDTOToUpdateVO(updated);

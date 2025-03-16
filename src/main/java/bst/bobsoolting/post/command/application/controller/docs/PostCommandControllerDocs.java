@@ -1,6 +1,5 @@
 package bst.bobsoolting.post.command.application.controller.docs;
 
-import bst.bobsoolting.post.command.application.dto.PostDTO;
 import bst.bobsoolting.post.command.domain.vo.request.RequestCreatePostVO;
 import bst.bobsoolting.post.command.domain.vo.request.RequestUpdatePostVO;
 import bst.bobsoolting.post.command.domain.vo.response.ResponseCreatePostVO;
@@ -29,7 +28,7 @@ public interface PostCommandControllerDocs {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @PostMapping
-    ResponseEntity<ResponseCreatePostVO> createPost(
+    ResponseEntity<?> createPost(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
             @RequestBody @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     content = @Content(schema = @Schema(implementation = RequestCreatePostVO.class))
@@ -44,7 +43,7 @@ public interface PostCommandControllerDocs {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @PutMapping("/{postId}")
-    ResponseEntity<ResponseUpdatePostVO> updatePost(
+    ResponseEntity<?> updatePost(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
             @Parameter(description = "게시글 ID", required = true) @PathVariable Long postId,
             @RequestBody @io.swagger.v3.oas.annotations.parameters.RequestBody(
