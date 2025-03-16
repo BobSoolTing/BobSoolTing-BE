@@ -73,7 +73,6 @@ logging:
 mybatis:
   mapper-locations: classpath:/bst/bobsoolting/mapper/**/*.xml
   configuration:
-    default-enum-type-handler: org.apache.ibatis.type.EnumTypeHandler
     map-underscore-to-camel-case: true
     type-handlers-package: bst.bobsoolting.util
 
