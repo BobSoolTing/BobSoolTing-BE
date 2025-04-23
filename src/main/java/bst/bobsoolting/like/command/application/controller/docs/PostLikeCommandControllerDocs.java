@@ -25,5 +25,5 @@ public interface PostLikeCommandControllerDocs {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @PostMapping("/{postId}")
-    ResponseEntity<String> likePost(@Parameter(description = "게시글 ID") @PathVariable Long postId, @RequestHeader(HttpHeaders.AUTHORIZATION) String token);
+    ResponseEntity<?> likePost(@Parameter(description = "게시글 ID") @PathVariable Long postId, @RequestHeader(HttpHeaders.AUTHORIZATION) String token);
 }

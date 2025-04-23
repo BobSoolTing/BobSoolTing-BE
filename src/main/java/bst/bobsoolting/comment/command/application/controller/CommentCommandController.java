@@ -46,7 +46,6 @@ public class CommentCommandController implements CommentCommandControllerDocs {
         }
     }
 
-
     @PatchMapping("/{commentId}")
     public ResponseEntity<?> updateComment(@PathVariable Long commentId, @RequestBody RequestUpdateCommentVO request, @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         log.info("수정 요청된 commentId: {}, 데이터: {}", commentId, request);

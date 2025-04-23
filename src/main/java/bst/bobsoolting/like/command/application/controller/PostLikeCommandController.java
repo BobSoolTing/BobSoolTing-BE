@@ -1,8 +1,11 @@
 package bst.bobsoolting.like.command.application.controller;
 
 import bst.bobsoolting.like.command.application.controller.docs.PostLikeCommandControllerDocs;
+import bst.bobsoolting.like.command.application.dto.PostLikeDTO;
+import bst.bobsoolting.like.command.application.mapper.PostLikeConverter;
 import bst.bobsoolting.like.command.application.service.PostLikeCommandService;
 import bst.bobsoolting.common.exception.CommonException;
+import bst.bobsoolting.like.command.domain.vo.response.ResponsePostLikeVO;
 import bst.bobsoolting.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,14 +21,16 @@ public class PostLikeCommandController implements PostLikeCommandControllerDocs 
 
     private final PostLikeCommandService postLikeCommandService;
     private final SecurityUtil securityUtil;
+    private final PostLikeConverter postLikeConverter;
 
     @PostMapping("/{postId}")
-    public ResponseEntity<String> likePost(@PathVariable Long postId, @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+    public ResponseEntity<?> likePost(@PathVariable Long postId, @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         String kakaoId = securityUtil.getKakaoIdFromToken(token.replace("Bearer ", ""));
         log.info("좋아요 요청 - postId: {}, kakaoId: {}", postId, kakaoId);
         try {
-            postLikeCommandService.likePost(postId, kakaoId);
-            return ResponseEntity.ok("좋아요가 성공적으로 등록되었습니다.");
+            PostLikeDTO postLikeDTO = postLikeCommandService.likePost(postId, kakaoId);
+            ResponsePostLikeVO response = postLikeConverter.fromDTOToVO(postLikeDTO);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (CommonException e) {
             log.error("좋아요 처리 오류: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());

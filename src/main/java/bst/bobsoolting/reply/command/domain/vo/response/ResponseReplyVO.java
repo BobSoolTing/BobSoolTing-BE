@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Schema(name = "ResponseReplyVO", description = "대댓글 응답 객체")
 public class ResponseReplyVO {
 
-    @Schema(description = "대댓글 ID", example = "2001")
+    @Schema(description = "대댓글 ID", example = "1L")
     @JsonProperty("reply_id")
     private Long replyId;
 
@@ -22,11 +22,15 @@ public class ResponseReplyVO {
     @JsonProperty("reply_content")
     private String replyContent;
 
+    @Schema(description = "대댓글 작성 시간", example = "2024-03-04T14:30:00")
+    @JsonProperty("created_at")
+    private LocalDateTime createdAt;
+
     @Schema(description = "작성자 ID", example = "user5678")
     @JsonProperty("member_id")
     private String memberId;
 
-    @Schema(description = "대댓글 작성 시간", example = "2024-03-04T14:30:00")
-    @JsonProperty("created_at")
-    private LocalDateTime createdAt;
+    @Schema(description = "댓글 ID", example = "1L")
+    @JsonProperty("comment_id")
+    private Long commentId;
 }
